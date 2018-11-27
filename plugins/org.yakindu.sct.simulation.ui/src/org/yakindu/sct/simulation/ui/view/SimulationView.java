@@ -14,19 +14,25 @@ import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IStep;
+import org.eclipse.debug.internal.ui.commands.actions.RestartCommandAction;
 import org.eclipse.debug.internal.ui.commands.actions.ResumeCommandAction;
 import org.eclipse.debug.internal.ui.commands.actions.StepOverCommandAction;
 import org.eclipse.debug.internal.ui.commands.actions.SuspendCommandAction;
+import org.eclipse.debug.internal.ui.commands.actions.TerminateAndRelaunchAction;
 import org.eclipse.debug.internal.ui.commands.actions.TerminateCommandAction;
 import org.eclipse.debug.ui.contexts.DebugContextEvent;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
@@ -57,14 +63,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.yakindu.base.base.NamedElement;
 import org.yakindu.base.types.typesystem.ITypeSystem;
 import org.yakindu.sct.domain.extension.DomainRegistry;
 import org.yakindu.sct.domain.extension.IDomain;
 import org.yakindu.sct.model.sgraph.Statechart;
+import org.yakindu.sct.model.sruntime.ExecutionContext;
 import org.yakindu.sct.model.sruntime.ExecutionEvent;
+import org.yakindu.sct.simulation.core.debugmodel.SCTDebugTarget;
 import org.yakindu.sct.simulation.core.engine.ISimulationEngine;
 import org.yakindu.sct.simulation.core.engine.scheduling.DefaultTimeTaskScheduler;
 import org.yakindu.sct.simulation.core.engine.scheduling.ITimeTaskScheduler;
+import org.yakindu.sct.simulation.core.sexec.container.AbstractExecutionFlowSimulationEngine;
+import org.yakindu.sct.simulation.core.sexec.container.CycleBasedSimulationEngine;
+import org.yakindu.sct.simulation.core.sexec.container.EventDrivenSimulationEngine;
+import org.yakindu.sct.simulation.core.sexec.launch.SexecLaunchConfigurationDelegate;
 import org.yakindu.sct.simulation.ui.SimulationImages;
 import org.yakindu.sct.simulation.ui.model.presenter.SCTSourceDisplayDispatcher;
 import org.yakindu.sct.simulation.ui.view.actions.CollapseAllAction;
@@ -318,7 +331,7 @@ public class SimulationView extends AbstractDebugTargetView implements ITypeSyst
 
 	protected void hookActions() {
 		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
-		Lists.newArrayList(new ResumeAction(), new SuspendAction(), new TerminateAction(), new StepOverAction())
+		Lists.newArrayList(new ResumeAction(), new SuspendAction(), new TerminateAction(), new StepOverAction(), new RestartAction(), new TerminateAndRelaunch())
 				.forEach(action -> {
 					mgr.add(action);
 				});
@@ -479,6 +492,85 @@ public class SimulationView extends AbstractDebugTargetView implements ITypeSyst
 		@Override
 		public boolean isEnabled() {
 			return debugTarget != null && debugTarget.canSuspend();
+		}
+	}
+	
+	protected class TerminateAndRelaunch extends TerminateAndRelaunchAction implements IAction {
+		@Override 
+		public void run() {
+			Display.getDefault().asyncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					IDebugTarget[] debugTargets = debugTarget.getLaunch().getDebugTargets();
+					for (IDebugTarget current : debugTargets) {
+						ILaunch launch = current.getLaunch();
+						SCTDebugTarget target = (SCTDebugTarget) launch.getDebugTarget();
+//						try {
+//							current.terminate();
+//							target.init();
+//							target.start();
+//						} catch (DebugException e) {
+//							e.printStackTrace();
+//						}
+					}
+				}
+			});
+		}
+		
+		@Override
+		public boolean isEnabled() {
+			return debugTarget != null && !debugTarget.isTerminated();
+		}
+	}
+	
+	protected class RestartAction extends RestartCommandAction implements IAction {
+		@Override
+		public void run() {
+			Display.getDefault().asyncExec(new Runnable() {
+ 
+				@Override
+				public void run() {
+					IDebugTarget[] debugTargets = debugTarget.getLaunch().getDebugTargets();
+					for (IDebugTarget current : debugTargets) {
+						ILaunch launch = current.getLaunch();
+						SCTDebugTarget target = (SCTDebugTarget) launch.getDebugTarget();
+						ISimulationEngine engine = target.getSimulationEngine();
+						NamedElement element = target.getElement();
+						
+						ISimulationEngine newEngine = null;
+						ILaunchConfiguration configuration = launch.getLaunchConfiguration();
+						String mode = launch.getLaunchMode();
+				
+						AbstractExecutionFlowSimulationEngine sth  = null;
+						if(element instanceof Statechart) {
+							Statechart statechart = (Statechart) element;
+//							if(engine instanceof CycleBasedSimulationEngine) {
+								sth = new AbstractExecutionFlowSimulationEngine(statechart);
+								newEngine = new CycleBasedSimulationEngine(statechart);
+//							} else if (engine instanceof EventDrivenSimulationEngine) {
+//								newEngine = new EventDrivenSimulationEngine(statechart);
+//							} else {
+							// sth is wrong here
+//							}
+						}
+						SCTDebugTarget newTarget = null;
+						try {
+							newTarget = new SCTDebugTarget(launch, element, sth);
+							launch.addDebugTarget(newTarget);
+							newTarget.init();
+							newTarget.start();
+						} catch (CoreException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+		}
+		
+		@Override
+		public boolean isEnabled() {
+			return debugTarget != null && !debugTarget.isTerminated();
 		}
 	}
 

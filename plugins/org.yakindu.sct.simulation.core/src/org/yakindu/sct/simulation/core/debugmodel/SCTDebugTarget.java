@@ -62,6 +62,10 @@ public class SCTDebugTarget extends SCTDebugElement implements IDebugTarget, ISt
 		this.engine = engine;
 		this.name = name;
 	}
+	
+	public NamedElement getElement() {
+		return this.element;
+	}
 
 	public void init() {
 		executionControl = engine.getExecutionControl();
