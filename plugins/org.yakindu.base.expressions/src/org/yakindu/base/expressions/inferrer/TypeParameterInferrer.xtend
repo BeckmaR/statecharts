@@ -10,11 +10,12 @@
  */
 package org.yakindu.base.expressions.inferrer
 
+import com.google.common.collect.ListMultimap
 import com.google.inject.Inject
 import java.util.List
-import java.util.Map
 import org.yakindu.base.types.ComplexType
 import org.yakindu.base.types.GenericElement
+import org.yakindu.base.types.Operation
 import org.yakindu.base.types.Parameter
 import org.yakindu.base.types.PrimitiveType
 import org.yakindu.base.types.Property
@@ -32,7 +33,7 @@ import org.yakindu.base.types.validation.TypeValidator
 import static org.yakindu.base.expressions.inferrer.ExpressionsTypeInferrerMessages.*
 import static org.yakindu.base.types.inferrer.ITypeSystemInferrer.NOT_COMPATIBLE_CODE
 import static org.yakindu.base.types.inferrer.ITypeSystemInferrer.NOT_INFERRABLE_TYPE_PARAMETER_CODE
-import org.yakindu.base.types.Operation
+import com.google.common.collect.Lists
 
 /**
  * Infers the actual type for a type parameter used in generic elements like operations or complex types.
@@ -63,7 +64,7 @@ class TypeParameterInferrer {
 	 * @param inferredTypeParameterTypes map of type parameters to their inference result which will be filled by this method
 	 */
 	def void inferTypeParametersFromOperationArguments(List<Parameter> parameters, List<InferenceResult> arguments,
-		Map<TypeParameter, InferenceResult> inferredTypeParameterTypes, IValidationIssueAcceptor acceptor) {
+		ListMultimap<TypeParameter, InferenceResult> typeConstraints, IValidationIssueAcceptor acceptor) {
 		if (parameters.size <= arguments.size) {
 			for (var i = 0; i < parameters.size; i++) {
 				val parameter = parameters.get(i).typeSpecifier;
@@ -75,7 +76,7 @@ class TypeParameterInferrer {
 						acceptor.accept(it)
 					])
 					if (thisIssueAcceptor.traces.empty) {
-						inferTypeParameterFromOperationArgument(parameter, argument, inferredTypeParameterTypes,
+						inferTypeParameterFromOperationArgument(parameter, argument, typeConstraints,
 							acceptor)
 					}
 				}
@@ -106,20 +107,20 @@ class TypeParameterInferrer {
 	}
 
 	def protected void inferTypeParameterFromOperationArgument(TypeSpecifier parameterTypeSpecifier,
-		InferenceResult argumentType, Map<TypeParameter, InferenceResult> inferredTypeParameterTypes,
+		InferenceResult argumentType, ListMultimap<TypeParameter, InferenceResult> typeConstraints,
 		IValidationIssueAcceptor acceptor) {
 		val parameterType = parameterTypeSpecifier?.type
 
 		if (parameterType instanceof TypeParameter) {
-			doInferTypeParameterFromOperationArgument(parameterType, argumentType, inferredTypeParameterTypes, acceptor)
+			doInferTypeParameterFromOperationArgument(parameterType, argumentType, typeConstraints, acceptor)
 		} else if (parameterType instanceof GenericElement) {
-			doInferGenericTypeFromOperationArgument(parameterTypeSpecifier, argumentType, inferredTypeParameterTypes,
+			doInferGenericTypeFromOperationArgument(parameterTypeSpecifier, argumentType, typeConstraints,
 				acceptor)
 		}
 	}
 
 	def protected doInferGenericTypeFromOperationArgument(TypeSpecifier parameterTypeSpecifier,
-		InferenceResult argumentType, Map<TypeParameter, InferenceResult> inferredTypeParameterTypes,
+		InferenceResult argumentType, ListMultimap<TypeParameter, InferenceResult> typeConstraints,
 		IValidationIssueAcceptor acceptor) {
 		for (var i = 0; i < parameterTypeSpecifier.typeArguments.size; i++) {
 			val typeParameter = parameterTypeSpecifier.typeArguments.get(i);
@@ -127,19 +128,19 @@ class TypeParameterInferrer {
 				acceptor.error(typeParameter, NOT_INFERRABLE_TYPE_PARAMETER_CODE)
 			} else {
 				val typeArgument = argumentType.bindings.get(i);
-				inferTypeParameterFromOperationArgument(typeParameter, typeArgument, inferredTypeParameterTypes,
+				inferTypeParameterFromOperationArgument(typeParameter, typeArgument, typeConstraints,
 					acceptor);
 			}
 		}
 	}
 
 	def protected doInferTypeParameterFromOperationArgument(TypeParameter typeParameter, InferenceResult argumentType,
-		Map<TypeParameter, InferenceResult> inferredTypeParameterTypes, IValidationIssueAcceptor acceptor) {
+		ListMultimap<TypeParameter, InferenceResult> typeConstraints, IValidationIssueAcceptor acceptor) {
 
 		val newMappedType = argumentType.type;
-		val typeInMap = resolveType(inferredTypeParameterTypes, typeParameter);
+		val typeInMap = resolveType(typeConstraints, typeParameter);
 		if (typeInMap === null) {
-			inferredTypeParameterTypes.put(typeParameter,
+			typeConstraints.put(typeParameter,
 				InferenceResult.from(newMappedType, argumentType.bindings));
 		} else {
 			val commonType = getCommonType(argumentType, typeInMap);
@@ -150,19 +151,19 @@ class TypeParameterInferrer {
 						acceptor.accept(it)
 					])
 			if (commonType === null || !thisIssueAcceptor.traces.isEmpty) {
-				inferredTypeParameterTypes.put(typeParameter, null);
+				typeConstraints.removeAll(typeParameter);
 				acceptor.error(
 					String.format(INFER_COMMON_TYPE, typeParameter.name,
 						newArrayList(argumentType.type.name, typeInMap.type.name)), NOT_INFERRABLE_TYPE_PARAMETER_CODE)
 			} else {
-				inferredTypeParameterTypes.put(typeParameter,
-					InferenceResult.from(commonType, argumentType.bindings));
+				typeConstraints.replaceValues(typeParameter,
+					Lists.newArrayList(InferenceResult.from(commonType, argumentType.bindings)));
 			}
 		}
 	}
 
 	def protected Type getCommonType(InferenceResult type1, InferenceResult type2) {
-		return registry.getCommonType(type1.type, type2.type)
+		return registry.getCommonTypeWithConversion(type1.type, type2.type)
 	}
 
 	/**
@@ -170,12 +171,11 @@ class TypeParameterInferrer {
 	 * resolving type parameters based on the given type parameter inference map.
 	 * For generic types this method calls itself recursively to fill all nested type parameters.
 	 */
-	def protected InferenceResult buildInferenceResult(InferenceResult oldInferenceResult,
-		Map<TypeParameter, InferenceResult> inferredTypeParameterTypes, IValidationIssueAcceptor acceptor) {
+	def protected InferenceResult buildInferenceResult(InferenceResult oldInferenceResult, ListMultimap<TypeParameter, InferenceResult> typeConstraints, IValidationIssueAcceptor acceptor) {
 		val oldInferredType = oldInferenceResult?.type
 		if (oldInferredType instanceof TypeParameter) {
 			// get already inferred type from type parameter map
-			val mappedType = resolveType(inferredTypeParameterTypes, oldInferredType);
+			val mappedType = resolveType(typeConstraints, oldInferredType);
 			if (mappedType === null) {
 				acceptor.warning(oldInferredType, NOT_INFERRABLE_TYPE_PARAMETER_CODE)
 				return null
@@ -185,7 +185,7 @@ class TypeParameterInferrer {
 		} else if (oldInferredType instanceof GenericElement) {
 			val List<InferenceResult> newBindings = newArrayList()
 			for (InferenceResult oldBinding : oldInferenceResult.bindings) {
-				newBindings.add(buildInferenceResult(oldBinding, inferredTypeParameterTypes, acceptor))
+				newBindings.add(buildInferenceResult(oldBinding, typeConstraints, acceptor))
 			}
 			return InferenceResult.from(oldInferenceResult.type, newBindings);
 		}
@@ -195,46 +195,46 @@ class TypeParameterInferrer {
 	/**
 	 * recursive resolution of type, e.g. when we have E->F and F->Int in map, the method will return Int for E.
 	 */
-	def protected InferenceResult resolveType(Map<TypeParameter, InferenceResult> inferredTypeParameterTypes, TypeParameter key) {
-		val res = inferredTypeParameterTypes.get(key)
-		if (res === null)
+	def protected InferenceResult resolveType(ListMultimap<TypeParameter, InferenceResult> typeConstraints, TypeParameter key) {
+		val res = typeConstraints.get(key)
+		if (res.isEmpty)
 			return null
 
-		if (res.type instanceof TypeParameter) {
-			val recursiveRes = resolveType(inferredTypeParameterTypes, res.type as TypeParameter)
+		// TODO, only first result is used
+		if (res.get(0).type instanceof TypeParameter) {
+			val recursiveRes = resolveType(typeConstraints, res.get(0).type as TypeParameter)
 			if (recursiveRes === null) {
-				return res
+				return res.get(0)
 			}
 			return recursiveRes
 		}
-		return res
+		return res.get(0)
 	}
-
-	def void inferTypeParametersFromOwner(InferenceResult operationOwnerResult,
-		Map<TypeParameter, InferenceResult> inferredTypeParameterTypes) {
+	
+	def void inferTypeParametersFromOwner(InferenceResult operationOwnerResult, ListMultimap<TypeParameter, InferenceResult> typeConstraints) {
 		val operationOwnerType = operationOwnerResult?.type
 		if (operationOwnerType instanceof GenericElement) {
 			for (var i = 0; i < operationOwnerType.typeParameters.size &&
 				i < operationOwnerResult.bindings.size; i++) { // T1, T2...
 				val typeParameter = operationOwnerType.typeParameters.get(i)
 				val binding = operationOwnerResult.bindings.get(i) // integer, boolean...
-				inferredTypeParameterTypes.put(typeParameter, binding)
+				typeConstraints.put(typeParameter, binding)
 			}
 			// add mapping from supertype's type parameters to this type's type parameters
-			inferTypeParametersFromSuperTypes(operationOwnerType, inferredTypeParameterTypes)
+			inferTypeParametersFromSuperTypes(operationOwnerType, typeConstraints)
 			
 		}
 	}
 	
-	protected def void inferTypeParametersFromSuperTypes(Type operationOwnerType, Map<TypeParameter, InferenceResult> inferredTypeParameterTypes) {
+	protected def void inferTypeParametersFromSuperTypes(Type operationOwnerType, ListMultimap<TypeParameter, InferenceResult> typeConstraints) {
 		val superTypes = operationOwnerType.superTypes
 		for (TypeSpecifier superType : superTypes) {
 			for (var i = 0; i < superType.typeArguments.size; i++){
 				val argument = superType.typeArguments.get(i)
 				val param = (superType.type as GenericElement).typeParameters.get(i)
-				inferredTypeParameterTypes.put(param, InferenceResult.from(argument.type))
+				typeConstraints.put(param, InferenceResult.from(argument.type))
 			}
-			inferTypeParametersFromSuperTypes(superType.type, inferredTypeParameterTypes)
+			inferTypeParametersFromSuperTypes(superType.type, typeConstraints)
 		}
 	}
 
@@ -279,8 +279,8 @@ class TypeParameterInferrer {
 		}
 	}
 		
-	def void inferTypeParametersFromTargetType(InferenceResult operationTargetResult, Operation op, Map<TypeParameter, InferenceResult> inferredTypeParameterTypes, IValidationIssueAcceptor acceptor) {
-		inferTypeParameterFromOperationArgument(op.typeSpecifier, operationTargetResult, inferredTypeParameterTypes, acceptor);
+	def void inferTypeParametersFromTargetType(InferenceResult operationTargetResult, Operation op, ListMultimap<TypeParameter, InferenceResult> typeConstraints, IValidationIssueAcceptor acceptor) {
+		inferTypeParameterFromOperationArgument(op.typeSpecifier, operationTargetResult, typeConstraints, acceptor);
 	}
 		
 	def protected ListBasedValidationIssueAcceptor createIssueAcceptor() {

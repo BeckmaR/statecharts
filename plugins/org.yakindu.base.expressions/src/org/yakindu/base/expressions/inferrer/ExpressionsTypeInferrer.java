@@ -20,7 +20,6 @@ import static org.yakindu.base.types.typesystem.ITypeSystem.VOID;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -71,7 +70,8 @@ import org.yakindu.base.types.TypeSpecifier;
 import org.yakindu.base.types.inferrer.AbstractTypeSystemInferrer;
 import org.yakindu.base.types.validation.IValidationIssueAcceptor;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.inject.Inject;
 
 /**
@@ -226,19 +226,20 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 
 	public InferenceResult doInfer(FeatureCall e) {
 		// map to hold inference results for type parameters
-		Map<TypeParameter, InferenceResult> inferredTypeParameterTypes = Maps.newHashMap();
-		typeParameterInferrer.inferTypeParametersFromOwner(inferTypeDispatch(e.getOwner()), inferredTypeParameterTypes);
+		ListMultimap<TypeParameter, InferenceResult> typeConstraints = ArrayListMultimap.create();
+		
+		typeParameterInferrer.inferTypeParametersFromOwner(inferTypeDispatch(e.getOwner()), typeConstraints);
 
 		if (e.isOperationCall()) {
 			if (!e.getFeature().eIsProxy()) {
-				return inferOperation(e, (Operation) e.getFeature(), inferredTypeParameterTypes);
+				return inferOperation(e, (Operation) e.getFeature(), typeConstraints);
 			} else {
 				return getAnyType();
 			}
 		}
 		InferenceResult result = inferTypeDispatch(e.getFeature());
 		if (result != null) {
-			result = typeParameterInferrer.buildInferenceResult(result, inferredTypeParameterTypes, acceptor);
+			result = typeParameterInferrer.buildInferenceResult(result, typeConstraints, acceptor);
 		}
 		if (result == null) {
 			return getAnyType();
@@ -249,8 +250,7 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 	public InferenceResult doInfer(ElementReferenceExpression e) {
 		if (e.isOperationCall()) {
 			if (e.getReference() != null && !e.getReference().eIsProxy()) {
-				return inferOperation(e, (Operation) e.getReference(),
-						Maps.<TypeParameter, InferenceResult>newHashMap());
+				return inferOperation(e, (Operation) e.getReference(), ArrayListMultimap.create());
 			} else {
 				return getAnyType();
 			}
@@ -259,7 +259,7 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 	}
 
 	protected InferenceResult inferOperation(ArgumentExpression e, Operation op,
-			Map<TypeParameter, InferenceResult> typeParameterMapping) {
+			ListMultimap<TypeParameter, InferenceResult> typeConstraints) {
 		
 		// resolve type parameter from operation call
 		List<InferenceResult> argumentTypes = getArgumentTypes(getOperationArguments(e));
@@ -269,7 +269,7 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 		List<Parameter> parametersToInfer = new ArrayList<>();
 
 		for (int i = 0; i < parameters.size(); i++) {
-			if (!typeParameterMapping.containsKey(parameters.get(i).getType())) {
+			if (!typeConstraints.containsKey(parameters.get(i).getType())) {
 				parametersToInfer.add(parameters.get(i));
 				if (i < argumentTypes.size()) {
 					argumentsToInfer.add(argumentTypes.get(i));
@@ -279,10 +279,11 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 		}
 
 		typeParameterInferrer.inferTypeParametersFromOperationArguments(parametersToInfer, argumentsToInfer,
-				typeParameterMapping, acceptor);
-		validateParameters(typeParameterMapping, op, getOperationArguments(e), acceptor);
+				typeConstraints, acceptor);
 		
-		return inferReturnType(e, op, typeParameterMapping);
+		validateParameters(typeConstraints, op, getOperationArguments(e), acceptor);
+		
+		return inferReturnType(e, op, typeConstraints);
 	}
 
 	protected InferenceResult getTargetType(ArgumentExpression exp) {
@@ -334,7 +335,7 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 	}
 
 	protected InferenceResult inferReturnType(ArgumentExpression e, Operation operation,
-			Map<TypeParameter, InferenceResult> inferredTypeParameterTypes) {
+			ListMultimap<TypeParameter, InferenceResult> typeConstraints) {
 		InferenceResult returnType = inferTypeDispatch(operation);
 		
 		// if return type is not generic nor type parameter, we can return it immediately
@@ -345,9 +346,9 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 			}
 		}
 		
-		inferByTargetType(e, operation, inferredTypeParameterTypes);
+		inferByTargetType(e, operation, typeConstraints);
 
-		returnType = typeParameterInferrer.buildInferenceResult(returnType, inferredTypeParameterTypes, acceptor);
+		returnType = typeParameterInferrer.buildInferenceResult(returnType, typeConstraints, acceptor);
 		if (returnType == null) {
 			return getAnyType();
 		}
@@ -355,11 +356,11 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 	}
 
 	private void inferByTargetType(ArgumentExpression e, Operation operation,
-			Map<TypeParameter, InferenceResult> inferredTypeParameterTypes) {
+			ListMultimap<TypeParameter, InferenceResult> typeConstraints) {
 		// use target type inference
 		InferenceResult targetType = getTargetType(e);
 		if (targetType != null) {
-			typeParameterInferrer.inferTypeParametersFromTargetType(targetType, operation, inferredTypeParameterTypes, acceptor);
+			typeParameterInferrer.inferTypeParametersFromTargetType(targetType, operation, typeConstraints, acceptor);
 		}
 	}
 
@@ -375,8 +376,8 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 	 * 
 	 * @throws TypeParameterInferrenceException
 	 */
-	public Map<TypeParameter, InferenceResult> validateParameters(
-			Map<TypeParameter, InferenceResult> typeParameterMapping, Operation operation, List<Expression> args,
+	public void validateParameters(
+			ListMultimap<TypeParameter, InferenceResult> typeConstraints, Operation operation, List<Expression> args,
 			IValidationIssueAcceptor acceptor) {
 		List<Parameter> parameters = operation.getParameters();
 		for (int i = 0; i < parameters.size(); i++) {
@@ -385,7 +386,7 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 				Expression argument = args.get(i);
 				InferenceResult parameterType = inferTypeDispatch(parameter);
 				InferenceResult argumentType = inferTypeDispatch(argument);
-				parameterType = typeParameterInferrer.buildInferenceResult(parameterType, typeParameterMapping,
+				parameterType = typeParameterInferrer.buildInferenceResult(parameterType, typeConstraints,
 						acceptor);
 				assertAssignable(parameterType, argumentType,
 						String.format(INCOMPATIBLE_TYPES, argumentType, parameterType));
@@ -396,14 +397,13 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 			List<Expression> varArgs = args.subList(operation.getVarArgIndex(), args.size() - 1);
 			InferenceResult parameterType = inferTypeDispatch(parameter);
 			for (Expression expression : varArgs) {
-				parameterType = typeParameterInferrer.buildInferenceResult(parameterType, typeParameterMapping,
+				parameterType = typeParameterInferrer.buildInferenceResult(parameterType, typeConstraints,
 						acceptor);
 				InferenceResult argumentType = inferTypeDispatch(expression);
 				assertAssignable(parameterType, argumentType,
 						String.format(INCOMPATIBLE_TYPES, argumentType, parameterType));
 			}
 		}
-		return typeParameterMapping;
 	}
 
 	public InferenceResult doInfer(ParenthesizedExpression e) {
