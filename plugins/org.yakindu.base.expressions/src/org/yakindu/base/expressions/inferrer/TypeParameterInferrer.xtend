@@ -11,7 +11,9 @@
 package org.yakindu.base.expressions.inferrer
 
 import com.google.common.collect.ListMultimap
+import com.google.common.collect.Lists
 import com.google.inject.Inject
+import java.util.Collections
 import java.util.List
 import org.yakindu.base.types.ComplexType
 import org.yakindu.base.types.GenericElement
@@ -33,9 +35,6 @@ import org.yakindu.base.types.validation.TypeValidator
 import static org.yakindu.base.expressions.inferrer.ExpressionsTypeInferrerMessages.*
 import static org.yakindu.base.types.inferrer.ITypeSystemInferrer.NOT_COMPATIBLE_CODE
 import static org.yakindu.base.types.inferrer.ITypeSystemInferrer.NOT_INFERRABLE_TYPE_PARAMETER_CODE
-import com.google.common.collect.Lists
-import java.util.Collection
-import java.util.Collections
 
 /**
  * Infers the actual type for a type parameter used in generic elements like operations or complex types.
@@ -114,7 +113,7 @@ class TypeParameterInferrer {
 		val parameterType = parameterTypeSpecifier?.type
 
 		if (parameterType instanceof TypeParameter) {
-			doInferTypeParameterFromOperationArgument(parameterType, argumentType, typeConstraints, acceptor)
+			typeConstraints.put(parameterType, argumentType)
 		} else if (parameterType instanceof GenericElement) {
 			doInferGenericTypeFromOperationArgument(parameterTypeSpecifier, argumentType, typeConstraints,
 				acceptor)
@@ -134,13 +133,6 @@ class TypeParameterInferrer {
 					acceptor);
 			}
 		}
-	}
-
-	def protected doInferTypeParameterFromOperationArgument(TypeParameter typeParameter, InferenceResult argumentType,
-		ListMultimap<TypeParameter, InferenceResult> typeConstraints, IValidationIssueAcceptor acceptor) {
-
-		val newMappedType = argumentType.type;
-		typeConstraints.put(typeParameter, InferenceResult.from(newMappedType, argumentType.bindings));
 	}
 
 	/**
@@ -168,26 +160,6 @@ class TypeParameterInferrer {
 		}
 		return oldInferenceResult;
 	}
-	
-	/**
-	 * recursive resolution of type, e.g. when we have E->F and F->Int in map, the method will return Int for E.
-	 */
-	def protected InferenceResult resolveType(ListMultimap<TypeParameter, InferenceResult> typeConstraints, TypeParameter key) {
-		val res = typeConstraints.get(key)
-		if (res.isEmpty)
-			return null
-
-		// TODO, only first result is used
-		if (res.get(0).type instanceof TypeParameter) {
-			val recursiveRes = resolveType(typeConstraints, res.get(0).type as TypeParameter)
-			if (recursiveRes === null) {
-				return res.get(0)
-			}
-			return recursiveRes
-		}
-		return res.get(0)
-	}
-	
 	
 	def void solve(ListMultimap<TypeParameter, InferenceResult> typeConstraints, IValidationIssueAcceptor acceptor) {
 		typeConstraints.asMap.forEach[typeParam, inferenceResults|
