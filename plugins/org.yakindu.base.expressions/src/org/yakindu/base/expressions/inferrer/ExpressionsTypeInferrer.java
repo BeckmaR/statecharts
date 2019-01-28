@@ -281,6 +281,8 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 		typeParameterInferrer.inferTypeParametersFromOperationArguments(parametersToInfer, argumentsToInfer,
 				typeConstraints, acceptor);
 		
+		typeParameterInferrer.solve(typeConstraints, acceptor);
+		
 		validateParameters(typeConstraints, op, getOperationArguments(e), acceptor);
 		
 		return inferReturnType(e, op, typeConstraints);
@@ -348,6 +350,8 @@ public class ExpressionsTypeInferrer extends AbstractTypeSystemInferrer implemen
 		
 		inferByTargetType(e, operation, typeConstraints);
 
+		typeParameterInferrer.solve(typeConstraints, acceptor);
+		
 		returnType = typeParameterInferrer.buildInferenceResult(returnType, typeConstraints, acceptor);
 		if (returnType == null) {
 			return getAnyType();

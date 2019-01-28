@@ -34,6 +34,8 @@ import static org.yakindu.base.expressions.inferrer.ExpressionsTypeInferrerMessa
 import static org.yakindu.base.types.inferrer.ITypeSystemInferrer.NOT_COMPATIBLE_CODE
 import static org.yakindu.base.types.inferrer.ITypeSystemInferrer.NOT_INFERRABLE_TYPE_PARAMETER_CODE
 import com.google.common.collect.Lists
+import java.util.Collection
+import java.util.Collections
 
 /**
  * Infers the actual type for a type parameter used in generic elements like operations or complex types.
@@ -138,32 +140,7 @@ class TypeParameterInferrer {
 		ListMultimap<TypeParameter, InferenceResult> typeConstraints, IValidationIssueAcceptor acceptor) {
 
 		val newMappedType = argumentType.type;
-		val typeInMap = resolveType(typeConstraints, typeParameter);
-		if (typeInMap === null) {
-			typeConstraints.put(typeParameter,
-				InferenceResult.from(newMappedType, argumentType.bindings));
-		} else {
-			val commonType = getCommonType(argumentType, typeInMap);
-			val errorMsg = String.format(INCOMPATIBLE_TYPES, argumentType.toString, typeInMap.toString)
-			val thisIssueAcceptor = createIssueAcceptor
-			typeValidator.assertTypeBindingsSame(argumentType, typeInMap, errorMsg,  [
-						thisIssueAcceptor.accept(it);
-						acceptor.accept(it)
-					])
-			if (commonType === null || !thisIssueAcceptor.traces.isEmpty) {
-				typeConstraints.removeAll(typeParameter);
-				acceptor.error(
-					String.format(INFER_COMMON_TYPE, typeParameter.name,
-						newArrayList(argumentType.type.name, typeInMap.type.name)), NOT_INFERRABLE_TYPE_PARAMETER_CODE)
-			} else {
-				typeConstraints.replaceValues(typeParameter,
-					Lists.newArrayList(InferenceResult.from(commonType, argumentType.bindings)));
-			}
-		}
-	}
-
-	def protected Type getCommonType(InferenceResult type1, InferenceResult type2) {
-		return registry.getCommonTypeWithConversion(type1.type, type2.type)
+		typeConstraints.put(typeParameter, InferenceResult.from(newMappedType, argumentType.bindings));
 	}
 
 	/**
@@ -175,12 +152,12 @@ class TypeParameterInferrer {
 		val oldInferredType = oldInferenceResult?.type
 		if (oldInferredType instanceof TypeParameter) {
 			// get already inferred type from type parameter map
-			val mappedType = resolveType(typeConstraints, oldInferredType);
-			if (mappedType === null) {
+			val mappedTypes = typeConstraints.get(oldInferredType);
+			if (mappedTypes.isEmpty || mappedTypes.size > 1) {
 				acceptor.warning(oldInferredType, NOT_INFERRABLE_TYPE_PARAMETER_CODE)
 				return null
 			} else {
-				return mappedType;
+				return mappedTypes.head;
 			}
 		} else if (oldInferredType instanceof GenericElement) {
 			val List<InferenceResult> newBindings = newArrayList()
@@ -211,6 +188,51 @@ class TypeParameterInferrer {
 		return res.get(0)
 	}
 	
+	
+	def void solve(ListMultimap<TypeParameter, InferenceResult> typeConstraints, IValidationIssueAcceptor acceptor) {
+		typeConstraints.asMap.forEach[typeParam, inferenceResults|
+			val concreteTypes = inferenceResults.map[toConcreteType(typeConstraints)].flatten
+			val commonType = getCommonType(concreteTypes, acceptor)
+			if (commonType === null) {
+				acceptor.error(
+					String.format(INFER_COMMON_TYPE, typeParam.name, concreteTypes.map[type.name]), NOT_INFERRABLE_TYPE_PARAMETER_CODE)
+			}
+			typeConstraints.replaceValues(typeParam, Lists.newArrayList(commonType))
+		]
+	}
+	
+	def Iterable<InferenceResult> toConcreteType(InferenceResult result, ListMultimap<TypeParameter, InferenceResult> typeConstraints) {
+		if (result.type instanceof TypeParameter) {
+			val concreteTypes = typeConstraints.get(result.type as TypeParameter)
+			return concreteTypes.map[toConcreteType(typeConstraints)].flatten
+		}
+		return Collections.singletonList(result)
+	}
+	
+	def InferenceResult getCommonType(Iterable<InferenceResult> results, IValidationIssueAcceptor acceptor) {
+		results.reduce [ type1, type2 |
+			getCommonType(type1, type2, acceptor)
+		]
+	}
+	
+	def InferenceResult getCommonType(InferenceResult type1, InferenceResult type2, IValidationIssueAcceptor acceptor) {
+		if(type1 === null || type2 === null) return null
+		
+		val errorMsg = String.format(INCOMPATIBLE_TYPES, type1.toString, type2.toString)
+		val thisIssueAcceptor = createIssueAcceptor
+		typeValidator.assertTypeBindingsSame(type1, type2, errorMsg, [
+			thisIssueAcceptor.accept(it);
+			acceptor.accept(it) // TODO: is this intermediate error relevant to be reported?
+		])
+		val commonType = registry.getCommonTypeWithConversion(type1.type, type2.type)
+
+		if (commonType === null || !thisIssueAcceptor.traces.isEmpty) {
+			return null
+		}
+
+		return InferenceResult.from(commonType, type1.bindings)
+	}
+
 	def void inferTypeParametersFromOwner(InferenceResult operationOwnerResult, ListMultimap<TypeParameter, InferenceResult> typeConstraints) {
 		val operationOwnerType = operationOwnerResult?.type
 		if (operationOwnerType instanceof GenericElement) {
