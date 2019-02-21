@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.equinox.p2.repository,
  org.eclipse.equinox.p2.ui,
  com.google.guava,
- org.eclipse.equinox.p2.engine
+ org.eclipse.equinox.p2.engine,
+ org.yakindu.sct.commons
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.yakindu.sct.ui,

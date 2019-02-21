@@ -14,11 +14,13 @@ import org.eclipse.emf.transaction.RunnableWithResult;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.model.DocumentTokenSource;
+import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.ui.editor.model.edit.ITextEditComposer;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.util.concurrent.CancelableUnitOfWork;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.yakindu.base.xtext.utils.jface.viewers.ParallelReadXtextDocument;
+import org.yakindu.sct.commons.DeadlockDetector;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -26,7 +28,8 @@ import com.google.inject.name.Named;
 @SuppressWarnings("unchecked")
 public class TransactionalXtextDocument extends ParallelReadXtextDocument {
 
-	
+	private DeadlockDetector detector = DeadlockDetector.INSTANCE;
+
 	public class UnitOfWorkOnTransactionalEditingDomain<T> implements IUnitOfWork<T, XtextResource> {
 
 		private IUnitOfWork<T, XtextResource> delegate;
@@ -34,9 +37,11 @@ public class TransactionalXtextDocument extends ParallelReadXtextDocument {
 		public UnitOfWorkOnTransactionalEditingDomain(IUnitOfWork<T, XtextResource> delegate) {
 			this.delegate = delegate;
 		}
-		
+
 		@Override
 		public T exec(XtextResource state) throws Exception {
+			detector.own(XtextDocument.class.getSimpleName());
+			detector.wait(TransactionalEditingDomain.class.getSimpleName());
 			try {
 				return (T) getDomain().runExclusive(new RunnableWithResult.Impl<T>() {
 					@Override
@@ -48,17 +53,22 @@ public class TransactionalXtextDocument extends ParallelReadXtextDocument {
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
+						} finally {
+							detector.release(TransactionalEditingDomain.class.getSimpleName());
 						}
 					}
 				});
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				return null;
+			} finally {
+				detector.release(XtextDocument.class.getSimpleName());
 			}
+
 		}
-		
+
 	}
-	
+
 	public class CancelableUnitOfWorkOnTransactionalEditingDomain<T> extends CancelableUnitOfWork<T, XtextResource> {
 
 		private CancelableUnitOfWork<T, XtextResource> delegate;
@@ -69,10 +79,13 @@ public class TransactionalXtextDocument extends ParallelReadXtextDocument {
 
 		@Override
 		public T exec(XtextResource state, CancelIndicator cancelIndicator) throws Exception {
+			detector.own(XtextDocument.class.getSimpleName());
+			detector.wait(TransactionalEditingDomain.class.getSimpleName());
 			try {
 				return (T) getDomain().runExclusive(new RunnableWithResult.Impl<T>() {
 					@Override
 					public void run() {
+						detector.own(TransactionalEditingDomain.class.getSimpleName());
 						try {
 							T result = delegate.exec(state, cancelIndicator);
 							if (result != null) {
@@ -80,17 +93,21 @@ public class TransactionalXtextDocument extends ParallelReadXtextDocument {
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
+						} finally {
+							detector.release(TransactionalEditingDomain.class.getSimpleName());
 						}
 					}
 				});
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				return null;
+			} finally {
+				detector.release(XtextDocument.class.getSimpleName());
 			}
 		}
-		
+
 	}
-	
+
 	@Inject
 	@Named("domain.id")
 	protected String domainId;
@@ -106,25 +123,31 @@ public class TransactionalXtextDocument extends ParallelReadXtextDocument {
 
 	@Override
 	public <T> T readOnly(IUnitOfWork<T, XtextResource> work) {
+		detector.wait(XtextDocument.class.getSimpleName());
 		if (work instanceof CancelableUnitOfWork) {
-			return super.readOnly(new CancelableUnitOfWorkOnTransactionalEditingDomain<T>((CancelableUnitOfWork<T, XtextResource>) work));
+			return super.readOnly(new CancelableUnitOfWorkOnTransactionalEditingDomain<T>(
+					(CancelableUnitOfWork<T, XtextResource>) work));
 		}
-		return super.readOnly(new UnitOfWorkOnTransactionalEditingDomain<T>(work)); 
+		return super.readOnly(new UnitOfWorkOnTransactionalEditingDomain<T>(work));
 	}
 
 	@Override
 	public <T> T priorityReadOnly(IUnitOfWork<T, XtextResource> work) {
+		detector.wait(XtextDocument.class.getSimpleName());
 		if (work instanceof CancelableUnitOfWork) {
-			return super.priorityReadOnly(new CancelableUnitOfWorkOnTransactionalEditingDomain<T>((CancelableUnitOfWork<T, XtextResource>) work));
+			return super.priorityReadOnly(new CancelableUnitOfWorkOnTransactionalEditingDomain<T>(
+					(CancelableUnitOfWork<T, XtextResource>) work));
 		}
-		return super.priorityReadOnly(new UnitOfWorkOnTransactionalEditingDomain<T>(work)); 
+		return super.priorityReadOnly(new UnitOfWorkOnTransactionalEditingDomain<T>(work));
 	}
 
 	@Override
 	public <T> T modify(IUnitOfWork<T, XtextResource> work) {
+		detector.wait(XtextDocument.class.getSimpleName());
 		if (work instanceof CancelableUnitOfWork) {
-			return super.modify(new CancelableUnitOfWorkOnTransactionalEditingDomain<T>((CancelableUnitOfWork<T, XtextResource>) work));
+			return super.modify(new CancelableUnitOfWorkOnTransactionalEditingDomain<T>(
+					(CancelableUnitOfWork<T, XtextResource>) work));
 		}
-		return super.modify(new UnitOfWorkOnTransactionalEditingDomain<T>(work)); 
+		return super.modify(new UnitOfWorkOnTransactionalEditingDomain<T>(work));
 	}
 }

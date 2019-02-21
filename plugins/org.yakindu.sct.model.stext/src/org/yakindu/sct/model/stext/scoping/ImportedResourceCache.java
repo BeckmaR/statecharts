@@ -27,6 +27,7 @@ import org.eclipse.xtext.resource.IResourceDescription.Manager;
 import org.eclipse.xtext.resource.IResourceServiceProvider;
 import org.eclipse.xtext.resource.impl.DefaultResourceDescription;
 import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionStrategy;
+import org.yakindu.sct.commons.DeadlockDetector;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -44,17 +45,21 @@ public class ImportedResourceCache {
 	@Inject
 	private DefaultResourceDescriptionStrategy delegateStrategy;
 
+	private DeadlockDetector detector = DeadlockDetector.INSTANCE;
+
 	protected TransactionalEditingDomain getEditingDomain() {
 		return TransactionalEditingDomain.Registry.INSTANCE.getEditingDomain(DOMAIN_ID);
 	}
 
 	public IResourceDescription get(final URI uri) {
+		detector.wait(TransactionalEditingDomain.class.getSimpleName());
 		refreshFile(uri);
 		try {
 			return (IResourceDescription) getEditingDomain()
 					.runExclusive(new RunnableWithResult.Impl<IResourceDescription>() {
 						@Override
 						public void run() {
+							detector.own(TransactionalEditingDomain.class.getSimpleName());
 							final ResourceSet set = getResourceSet();
 							final Resource resource = set.getResource(uri, true);
 							if (resource != null) {
@@ -72,6 +77,7 @@ public class ImportedResourceCache {
 										.getResourceDescription(resource);
 								setResult(result);
 							}
+							detector.release(TransactionalEditingDomain.class.getSimpleName());
 						}
 					});
 		} catch (InterruptedException e) {
