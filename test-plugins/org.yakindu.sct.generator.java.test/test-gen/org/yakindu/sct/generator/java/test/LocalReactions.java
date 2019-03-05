@@ -44,4 +44,18 @@ public class LocalReactions {
 		timer.cycleLeap(1);
 		assertTrue(statemachine.getX() == 1l);
 	}
+	
+	@Test
+	public void statechartLocalReactionsTest() {
+		statemachine.enter();
+		assertTrue(statemachine.getEn_true() == 1l);
+		assertTrue(statemachine.getEn_false() == 0l);
+		assertTrue(statemachine.getEx_true() == 0l);
+		assertTrue(statemachine.getEx_false() == 0l);
+		statemachine.exit();
+		assertTrue(statemachine.getEn_true() == 1l);
+		assertTrue(statemachine.getEn_false() == 0l);
+		assertTrue(statemachine.getEx_true() == 1l);
+		assertTrue(statemachine.getEx_false() == 0l);
+	}
 }

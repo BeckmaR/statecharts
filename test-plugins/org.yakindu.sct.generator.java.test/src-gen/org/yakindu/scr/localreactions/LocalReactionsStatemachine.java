@@ -15,6 +15,46 @@ public class LocalReactionsStatemachine implements ILocalReactionsStatemachine {
 			this.x = value;
 		}
 		
+		private long en_false;
+		
+		public long getEn_false() {
+			return en_false;
+		}
+		
+		public void setEn_false(long value) {
+			this.en_false = value;
+		}
+		
+		private long en_true;
+		
+		public long getEn_true() {
+			return en_true;
+		}
+		
+		public void setEn_true(long value) {
+			this.en_true = value;
+		}
+		
+		private long ex_true;
+		
+		public long getEx_true() {
+			return ex_true;
+		}
+		
+		public void setEx_true(long value) {
+			this.ex_true = value;
+		}
+		
+		private long ex_false;
+		
+		public long getEx_false() {
+			return ex_false;
+		}
+		
+		public void setEx_false(long value) {
+			this.ex_false = value;
+		}
+		
 	}
 	
 	protected SCInterfaceImpl sCInterface;
@@ -43,6 +83,14 @@ public class LocalReactionsStatemachine implements ILocalReactionsStatemachine {
 		clearEvents();
 		clearOutEvents();
 		sCInterface.setX(0);
+		
+		sCInterface.setEn_false(0);
+		
+		sCInterface.setEn_true(0);
+		
+		sCInterface.setEx_true(0);
+		
+		sCInterface.setEx_false(0);
 	}
 	
 	public void enter() {
@@ -51,6 +99,10 @@ public class LocalReactionsStatemachine implements ILocalReactionsStatemachine {
 				"The state machine needs to be initialized first by calling the init() function."
 			);
 		}
+		sCInterface.setEn_true(1);
+		
+		sCInterface.setEn_false(1);
+		
 		enterSequence_main_region_default();
 	}
 	
@@ -72,6 +124,9 @@ public class LocalReactionsStatemachine implements ILocalReactionsStatemachine {
 	}
 	public void exit() {
 		exitSequence_main_region();
+		sCInterface.setEx_true(1);
+		
+		sCInterface.setEx_false(1);
 	}
 	
 	/**
@@ -124,6 +179,38 @@ public class LocalReactionsStatemachine implements ILocalReactionsStatemachine {
 	
 	public void setX(long value) {
 		sCInterface.setX(value);
+	}
+	
+	public long getEn_false() {
+		return sCInterface.getEn_false();
+	}
+	
+	public void setEn_false(long value) {
+		sCInterface.setEn_false(value);
+	}
+	
+	public long getEn_true() {
+		return sCInterface.getEn_true();
+	}
+	
+	public void setEn_true(long value) {
+		sCInterface.setEn_true(value);
+	}
+	
+	public long getEx_true() {
+		return sCInterface.getEx_true();
+	}
+	
+	public void setEx_true(long value) {
+		sCInterface.setEx_true(value);
+	}
+	
+	public long getEx_false() {
+		return sCInterface.getEx_false();
+	}
+	
+	public void setEx_false(long value) {
+		sCInterface.setEx_false(value);
 	}
 	
 	/* 'default' enter sequence for state A */

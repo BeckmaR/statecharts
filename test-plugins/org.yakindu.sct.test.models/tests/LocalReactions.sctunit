@@ -1,12 +1,25 @@
 testclass LocalReactions for statechart LocalReactions{
+	
 	@Test
 	operation LocalReactionsTest(){ 
-		
 		enter
 		assert active(LocalReactions.main_region.A) 
 		proceed 1 cycle
 		assert x == 1
-		 
+	}
+	
+	@Test
+	operation StatechartLocalReactionsTest(){ 
+		enter
+		assert en_true == 1
+		assert en_false == 0
+		assert ex_true == 0
+		assert ex_false == 0
+		exit
+		assert en_true == 1
+		assert en_false == 0
+		assert ex_true == 1
+		assert ex_false == 0
 	} 
 }
 	
