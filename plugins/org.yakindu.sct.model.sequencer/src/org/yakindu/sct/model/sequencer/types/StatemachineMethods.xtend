@@ -197,11 +197,17 @@ class StatemachineMethods {
 		)
 	}
 	
-	def defineRunCycleMethod(ComplexType it, Statechart sc) {
-		it.features += createRunCycleMethod => [
+	def create _op rtcMethod(ComplexType type) {
+		name = "runToCompletion"
+		_type(ITypeSystem.VOID)
+		visibility = Visibility.PROTECTED
+	}
+	
+	def defineRtcMethod(ComplexType it, Statechart sc) {
+		it.features += rtcMethod => [
 			body = _block(
 				
-				sc.createClearOutEventsMethod._call,
+//				sc.createClearOutEventsMethod._call,
 				
 				_for(nextStateIndex(sc)._ref._assign(0._int), nextStateIndex(sc)._ref._smaller(stateVectorProperty(sc)._ref._fc(_array._length)), nextStateIndex(sc)._ref._inc) => [
 					body = _block(
@@ -209,9 +215,9 @@ class StatemachineMethods {
 							s.reactMethod._call(_true)
 						], _block)
 					)
-				],
+				]
 				
-				sc.createClearEventsMethod._call
+//				sc.createClearEventsMethod._call
 			)
 		]
 	}
@@ -248,28 +254,28 @@ class StatemachineMethods {
 		_param("state", sc.statesEnumeration)
 	}
 	
-	def create _op createClearOutEventsMethod(Statechart sc) {
+	def create _op clearOutEventsMethod(ComplexType type) {
 		name = "clearOutEvents"
 		_type(ITypeSystem.VOID)
 		visibility = Visibility.PROTECTED
 	}
 	
 	def defineClearOutEventsMethod(ComplexType it, Statechart sc) {
-		it.features += createClearOutEventsMethod(sc) => [
+		it.features += clearOutEventsMethod => [
 			body = _block(
 				sc.scopes.filter(InterfaceScope).map[iface | iface.property._ref._fc(iface.createInterfaceType.clearOutEvents)]
 			)
 		]
 	}
 	
-	def create _op createClearEventsMethod(Statechart sc) {
+	def create _op clearEventsMethod(ComplexType type) {
 		name = "clearEvents"
 		_type(ITypeSystem.VOID)
 		visibility = Visibility.PROTECTED
 	}
 	
 	def defineClearEventsMethod(ComplexType it, Statechart sc) {
-		it.features += createClearEventsMethod(sc) => [
+		it.features += clearEventsMethod => [
 			body = _block => [
 				expressions += sc.scopes.filter(InterfaceScope).map[iface | iface.property._ref._fc(iface.createInterfaceType.clearEvents)]
 				// clear internal events directly

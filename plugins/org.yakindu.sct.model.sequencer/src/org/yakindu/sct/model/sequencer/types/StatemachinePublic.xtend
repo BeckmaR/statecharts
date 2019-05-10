@@ -20,6 +20,8 @@ import org.yakindu.base.types.TypeBuilder
 import org.yakindu.base.types.TypesFactory
 import org.yakindu.base.types.Visibility
 import org.yakindu.sct.model.sequencer.ModelSequencerNaming
+import org.yakindu.sct.model.sequencer.cyclebased.CycleBasedAnnotation
+import org.yakindu.sct.model.sequencer.eventdriven.EventDrivenAnnotation
 import org.yakindu.sct.model.sgraph.RegularState
 import org.yakindu.sct.model.sgraph.Statechart
 import org.yakindu.sct.model.stext.stext.InterfaceScope
@@ -45,6 +47,10 @@ import org.yakindu.sct.model.stext.stext.InternalScope
 	@Inject protected extension ModelSequencerNaming
 	@Inject protected extension StatemachineInterfaceMethods
 	
+	@Inject extension EventDrivenAnnotation
+	@Inject extension CycleBasedAnnotation
+	@Inject extension StatemachineAnnotation
+	
 	def create createPackage statemachinePackage(Statechart sc) {
  		it => [
  			name = sc.statemachinePackageName
@@ -56,8 +62,10 @@ import org.yakindu.sct.model.stext.stext.InternalScope
 		it => [
 			
 			name = sc.name
-			superTypes += createTypeSpecifier => [ type = statemachineInterfaceType ]
 			sc.statemachinePackage.member += it
+
+			sc.statemachinePackage.member += baseInterfaceType
+			_extends(baseInterfaceType)
 
 			features += interfaceAnnotationType
 
@@ -71,6 +79,8 @@ import org.yakindu.sct.model.stext.stext.InternalScope
 			]
 
 			declareMembers(sc)
+			
+			addAnnotations(sc)
 		]
 	}
 	
@@ -113,6 +123,21 @@ import org.yakindu.sct.model.stext.stext.InternalScope
 		sc.scopes.filter(InternalScope).forEach [ internal |
 			scType.features += internal.property
 		]
+	}
+	
+	protected def addAnnotations(ComplexType scType, Statechart sc) {
+		
+		if (sc.isEventDriven) {
+			// @EventDriven
+			val eventDrivenAnnotation = sc.statemachinePackage.createEventDrivenAnnotationType
+			scType._annotateWith(eventDrivenAnnotation)
+		} else {
+			// @CycleBased
+			val cycleBasedAnnotation = sc.statemachinePackage.createCycleBasedAnnotationType
+			scType._annotateWith(cycleBasedAnnotation)
+		}
+		// @Statemachine
+		scType._annotateWith(sc.statemachinePackage.createStatemachineAnnotationType)
 	}
 	
 	def create createProperty property(InterfaceScope iface) {

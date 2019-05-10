@@ -33,14 +33,7 @@ import org.yakindu.base.types.typesystem.ITypeSystem
  	
  	public static val String NAME = "IStatemachine"
  
- 
- 	def create createPackage scrPackage() {
- 		it => [
- 			name = "sct"
- 		]	
- 	}
- 	
- 	def create createComplexType statemachineInterfaceType() {
+ 	def create createComplexType baseInterfaceType() {
 		it => [
 			name = NAME
 			features += createInitMethod
@@ -48,10 +41,8 @@ import org.yakindu.base.types.typesystem.ITypeSystem
 			features += createExitMethod
 			features += createIsActiveMethod
 			features += createIsFinalMethod
-			features += createRunCycleMethod
 		]
 		abstract = true
-		scrPackage.member += it
 	}
 
 	def createInitMethod() {
@@ -72,10 +63,6 @@ import org.yakindu.base.types.typesystem.ITypeSystem
 	
 	def createIsFinalMethod() {
 		_op("isFinal", tSystem.getType(ITypeSystem.BOOLEAN))
-	}
-	
-	def createRunCycleMethod() {
-		_op("runCycle", tSystem.getType(ITypeSystem.VOID))
 	}
 	
 }

@@ -29,7 +29,7 @@ import org.yakindu.base.types.Package
 class ModificationExecutor implements IModification {
 	
 	@Inject Set<IModification> modifications;
-
+	
 	def protected Collection<Package> modifyInternal(Collection<Package> packages) {
 		var result = packages
 		for(modification : modifications) {

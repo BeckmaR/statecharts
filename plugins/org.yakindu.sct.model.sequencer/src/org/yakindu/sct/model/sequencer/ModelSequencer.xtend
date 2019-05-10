@@ -11,9 +11,14 @@
 package org.yakindu.sct.model.sequencer
 
 import com.google.inject.Inject
+import java.util.List
 import org.yakindu.base.types.Package
 import org.yakindu.base.types.validation.IValidationIssueAcceptor
 import org.yakindu.base.types.validation.IValidationIssueAcceptor.ListBasedValidationIssueAcceptor
+import org.yakindu.sct.model.sequencer.cyclebased.InEventModification
+import org.yakindu.sct.model.sequencer.cyclebased.LocalEventModification
+import org.yakindu.sct.model.sequencer.cyclebased.OutEventModification
+import org.yakindu.sct.model.sequencer.eventdriven.EventDrivenAnnotation
 import org.yakindu.sct.model.sequencer.expressions.ExpressionOptimizer
 import org.yakindu.sct.model.sequencer.expressions.RetargetReferences
 import org.yakindu.sct.model.sequencer.operations.EnterDeepOperation
@@ -29,6 +34,8 @@ import org.yakindu.sct.model.sequencer.types.StatemachineMethods
 import org.yakindu.sct.model.sequencer.types.StatemachineProperties
 import org.yakindu.sct.model.sequencer.types.StatemachinePublic
 import org.yakindu.sct.model.sgraph.Statechart
+import org.yakindu.slang.modification.IModification
+import org.yakindu.sct.model.sequencer.cyclebased.CycleBasedModification
 
 class ModelSequencer implements IModelSequencer {
 	 
@@ -50,6 +57,13 @@ class ModelSequencer implements IModelSequencer {
 	
 	@Inject extension ExpressionOptimizer
 	
+	@Inject extension EventDrivenAnnotation
+	
+	// TODO: use multibindings and ModificationExecutor
+	@Inject InEventModification inEventMod
+	@Inject OutEventModification outEventMod
+	@Inject LocalEventModification localEventMod
+	@Inject CycleBasedModification cycleBasedMod
 	
 	/* ==========================================================================
 	 * TRANSFORMATION ROOT
@@ -59,13 +73,19 @@ class ModelSequencer implements IModelSequencer {
 	}
 	
 	override Package transform(Statechart sc, IValidationIssueAcceptor acceptor) {
-		return sc.makePackage
+		val pkg = sc.makePackage
+		
+		for (mod : sc.modifications) {
+			mod.modify(#[pkg])
+		}
+		
+		pkg
 	}
 
 	protected def create pkg:sc.statemachinePackage makePackage(Statechart sc) {
 
 		val sctype = sc.statemachineType
-
+		
 		sctype.defineProperties(sc)
 
 		sc.declareEntryActionOperations
@@ -94,14 +114,47 @@ class ModelSequencer implements IModelSequencer {
 		sctype.defineInitMethod(sc)
 		sctype.defineIsActiveMethod(sc)
 		sctype.defineIsFinalMethod(sc)
-		sctype.defineRunCycleMethod(sc)
 		sctype.defineIsStateActiveMethod(sc)
+		
+		sctype.defineRtcMethod(sc)
 		sctype.defineClearOutEventsMethod(sc)
 		sctype.defineClearEventsMethod(sc)
 		
 		pkg.retargetReferences
 		
 		pkg.optimize
+	}
+	
+	protected def List<IModification> getModifications(Statechart sc) {
+		if (sc.isEventDriven) {
+			
+			return #[
+				// add localQ
+				// add inQ
+				
+				// create raise method for events (@trigger on raise method)
+				
+				// resolve @trigger to processEvents call
+				
+			]
+		} else {
+			
+			return #[
+				
+				// create raise method for events
+				inEventMod,
+				outEventMod,
+				localEventMod,
+
+				// add ICycleBased & runCycle method with @trigger annotation
+				cycleBasedMod
+				
+				// resolve @trigger to processEvents call
+	
+			]
+		}
+		
+		
 	}
 	
 }

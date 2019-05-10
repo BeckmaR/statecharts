@@ -111,5 +111,15 @@ class TypeBuilder {
 		}
 		elem.annotationInfo.annotations += createAnnotation => [type = annotationType]
 	}
+	
+	def _annotationType(String name) {
+		createAnnotationType => [
+			it.name = name
+		]
+	}
+	
+	def _extends(Type subType, Type superType) {
+		subType.superTypes += createTypeSpecifier => [type = superType]
+	}
 
 }
