@@ -27,7 +27,7 @@ class CycleBasedModification implements IModification {
 	
 	def protected modify(Package p) {
 		getAnnotatedComplexTypes(p).forEach[ cT |
-			cT.defineRunCycleMethod			
+			p.member += cT.defineRunCycleMethod			
 		]
 	}
 	
@@ -43,7 +43,10 @@ class CycleBasedModification implements IModification {
 			)
 			visibility = Visibility.PUBLIC
 		]
-		cT.superTypes += _typeSpecifier(cycleBasedMachineType)
+		
+		val interface = cycleBasedMachineType
+		cT.superTypes += _typeSpecifier(interface)
+		interface
 	}
 	
 	def getAnnotatedComplexTypes(Package p) {

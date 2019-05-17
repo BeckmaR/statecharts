@@ -16,6 +16,7 @@ import org.yakindu.base.expressions.util.PackageNavigationExtensions
 import org.yakindu.base.types.AnnotatableElement
 import org.yakindu.base.types.AnnotationType
 import org.yakindu.base.types.ComplexType
+import org.yakindu.base.types.Constructor
 import org.yakindu.base.types.Declaration
 import org.yakindu.base.types.EnumerationType
 import org.yakindu.base.types.Operation
@@ -27,7 +28,6 @@ import org.yakindu.sct.types.generator.ITypesGenerator
 import org.yakindu.sct.types.generator.artifacts.Dependency.ArtifactDependency
 import org.yakindu.sct.types.generator.artifacts.Dependency.StaticDependency
 import org.yakindu.sct.types.generator.artifacts.GeneratorArtifact
-import org.yakindu.sct.types.generator.java.modifications.ConstructorBuilder
 
 import static org.eclipse.xtext.util.Strings.newLine
 
@@ -35,7 +35,6 @@ class JavaTypesGenerator extends AbstractTypesGenerator implements ITypesGenerat
 
 	@Inject extension Expressions
 	@Inject protected extension PackageNavigationExtensions
-	@Inject protected extension ConstructorBuilder
 	
 	override protected generate(GeneratorArtifact<?> it) {
 		'''
@@ -94,11 +93,12 @@ class JavaTypesGenerator extends AbstractTypesGenerator implements ITypesGenerat
 
 	def dispatch String doGenerate(Operation it) '''
 		«annotations(it)»
-		«IF isConstructor && body !== null»
-			«visibilityMod»«EcoreUtil2.getContainerOfType(it, ComplexType).name»(«FOR p : parameters SEPARATOR ', '»«annotations(p)» «p.typeSpecifier.code»«IF p.isVarArgs»...«ENDIF» «p.name»«ENDFOR»)«IF body !== null»«body.code»«ELSE»;«ENDIF» 
-		«ELSEIF !isConstructor»
-			«visibilityMod»«staticMod»«IF type === null»void«ELSE»«typeSpecifier.code»«ENDIF» «name»(«FOR p : parameters SEPARATOR ', '»«annotations(it)» «p.typeSpecifier.code»«IF p.isVarArgs»...«ENDIF» «p.name»«ENDFOR»)«IF body !== null»«body.code»«ELSE»;«ENDIF» 
-		«ENDIF»
+		«visibilityMod»«staticMod»«IF type === null»void«ELSE»«typeSpecifier.code»«ENDIF» «name»(«FOR p : parameters SEPARATOR ', '»«annotations(it)» «p.typeSpecifier.code»«IF p.isVarArgs»...«ENDIF» «p.name»«ENDFOR»)«IF body !== null»«body.code»«ELSE»;«ENDIF» 
+	'''
+	
+	def dispatch String doGenerate(Constructor it) '''
+		«annotations(it)»
+		«visibilityMod»«EcoreUtil2.getContainerOfType(it, ComplexType).name»(«FOR p : parameters SEPARATOR ', '»«annotations(p)» «p.typeSpecifier.code»«IF p.isVarArgs»...«ENDIF» «p.name»«ENDFOR»)«IF body !== null»«body.code»«ELSE»{};«ENDIF» 
 	'''
 
 	def dispatch doGenerate(AnnotationType it) '''

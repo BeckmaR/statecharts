@@ -33,13 +33,6 @@ import org.yakindu.base.types.typesystem.ITypeSystem
  	
  	public static val String NAME = "IStatemachine"
  
- 
- 	def create createPackage scrPackage() {
- 		it => [
- 			name = "sct"
- 		]	
- 	}
- 	
  	def create createComplexType statemachineInterfaceType() {
 		it => [
 			name = NAME
@@ -50,7 +43,6 @@ import org.yakindu.base.types.typesystem.ITypeSystem
 			features += createIsFinalMethod
 		]
 		abstract = true
-		scrPackage.member += it
 	}
 
 	def createInitMethod() {

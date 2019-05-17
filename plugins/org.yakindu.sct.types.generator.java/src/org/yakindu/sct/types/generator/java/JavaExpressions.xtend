@@ -17,6 +17,7 @@ import org.yakindu.base.expressions.expressions.FeatureCall
 import org.yakindu.base.expressions.expressions.LogicalRelationExpression
 import org.yakindu.base.expressions.util.ContainmentExtensions
 import org.yakindu.base.types.ComplexType
+import org.yakindu.base.types.Constructor
 import org.yakindu.base.types.EnumerationType
 import org.yakindu.base.types.Expression
 import org.yakindu.base.types.Operation
@@ -24,11 +25,9 @@ import org.yakindu.base.types.Property
 import org.yakindu.base.types.TypeSpecifier
 import org.yakindu.base.types.typesystem.ITypeSystem
 import org.yakindu.sct.types.generator.Expressions
-import org.yakindu.sct.types.generator.java.modifications.ConstructorBuilder
 
 class JavaExpressions extends Expressions {
 	
-	@Inject protected extension ConstructorBuilder
 	@Inject protected extension ContainmentExtensions
 	
 	override dispatch String code(Property it) {
@@ -53,7 +52,7 @@ class JavaExpressions extends Expressions {
 	def dispatch size(Expression it) '''0'''
 
 	override dispatch String code(FeatureCall it) {
-		if (isConstructorCall) {
+		if (feature instanceof Constructor) {
 			'''new «it.owner.code»«argumentList(feature as Operation)»'''
 		} else {
 			'''«it.owner.code».«it.argumentCall(feature)»'''

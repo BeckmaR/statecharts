@@ -17,6 +17,7 @@ import org.yakindu.base.expressions.util.ContainmentExtensions
 import org.yakindu.base.expressions.util.ExpressionBuilder
 import org.yakindu.base.expressions.util.PackageNavigationExtensions
 import org.yakindu.base.types.ComplexType
+import org.yakindu.base.types.Constructor
 import org.yakindu.base.types.Operation
 import org.yakindu.base.types.Package
 import org.yakindu.base.types.Property
@@ -26,7 +27,6 @@ import org.yakindu.base.types.Visibility
 import org.yakindu.base.types.typesystem.ITypeSystem
 import org.yakindu.sct.model.sequencer.ModelSequencerNaming
 import org.yakindu.sct.model.sequencer.util.SequencerAnnotationLibrary
-import org.yakindu.sct.types.generator.java.modifications.ConstructorBuilder
 import org.yakindu.sct.types.generator.statechart.java.naming.JavaOCBNaming
 import org.yakindu.sct.types.modification.IModification
 import org.yakindu.sct.types.modification.util.ReferenceExtension
@@ -45,7 +45,6 @@ class OperationCallbackModification implements IModification {
 	@Inject protected extension ModelSequencerNaming
 	@Inject protected extension ContainmentExtensions
 	@Inject protected extension ReferenceExtension
-	@Inject protected extension ConstructorBuilder
 
 	@Inject protected extension JavaOCBNaming
 	
@@ -115,7 +114,7 @@ class OperationCallbackModification implements IModification {
 	}
 	
 	protected def getOperationDeclarations(ComplexType ct) {
-		ct.features.filter(Operation).filter[body === null].filter[!isConstructor].toList
+		ct.features.filter(Operation).filter[body === null].filter[!(it instanceof Constructor)].toList
 	}
 	
 	protected def createOCBInterface(ComplexType ct) {
