@@ -19,9 +19,16 @@ public class Choice {
 	private ChoiceStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/Choice.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/Choice.sgen");
+	
+	
 	
 	@Before
 	public void choice_setUp() {
+		helper.generate();
+		
 		statemachine = new ChoiceStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

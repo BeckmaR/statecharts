@@ -95,7 +95,9 @@ public class TestModelGenerator {
 
 		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(pathToProjectFile);
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(description.getName());
-		project.create(description, null);
+		if (!project.exists()) {
+			project.create(description, null);
+		}
 		project.open(null);
 		return project;
 	}

@@ -19,9 +19,16 @@ public class BooleanExpressions {
 	private BooleanExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/BooleanExpressions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/BooleanExpressions.sgen");
+	
+	
 	
 	@Before
 	public void booleanExpressions_setUp() {
+		helper.generate();
+		
 		statemachine = new BooleanExpressionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

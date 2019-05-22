@@ -19,9 +19,16 @@ public class SimpleEvent {
 	private SimpleEventStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/SimpleEvent.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/SimpleEvent.sgen");
+	
+	
 	
 	@Before
 	public void simpleEvent_setUp() {
+		helper.generate();
+		
 		statemachine = new SimpleEventStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

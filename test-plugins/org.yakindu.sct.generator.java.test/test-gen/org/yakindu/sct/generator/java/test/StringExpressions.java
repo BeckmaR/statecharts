@@ -19,9 +19,16 @@ public class StringExpressions {
 	private StringExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/StringExpressions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/StringExpressions.sgen");
+	
+	
 	
 	@Before
 	public void stringExpressions_setUp() {
+		helper.generate();
+		
 		statemachine = new StringExpressionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

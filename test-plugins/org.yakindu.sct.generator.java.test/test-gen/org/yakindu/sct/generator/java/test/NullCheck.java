@@ -19,9 +19,16 @@ public class NullCheck {
 	private NullCheckStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/NullCheck.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/NullCheck.sgen");
+	
+	
 	
 	@Before
 	public void nullCheck_setUp() {
+		helper.generate();
+		
 		statemachine = new NullCheckStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

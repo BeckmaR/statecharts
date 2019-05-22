@@ -16,9 +16,16 @@ public class LocalEvents {
 	
 	private LocalEventsStatemachine statemachine;	
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/eventdriven/LocalEvents.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/LocalEvents.sgen");
+	
+	
 	
 	@Before
 	public void localEvents_setUp() {
+		helper.generate();
+		
 		statemachine = new LocalEventsStatemachine();
 		
 		statemachine.init();

@@ -19,9 +19,16 @@ public class FloatModulo {
 	private FloatModuloStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/FloatModulo.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/FloatModulo.sgen");
+	
+	
 	
 	@Before
 	public void floatModulo_setUp() {
+		helper.generate();
+		
 		statemachine = new FloatModuloStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

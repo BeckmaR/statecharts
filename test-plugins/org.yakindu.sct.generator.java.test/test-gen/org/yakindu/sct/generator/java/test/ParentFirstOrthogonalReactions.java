@@ -26,9 +26,16 @@ public class ParentFirstOrthogonalReactions {
 	private ParentFirstOrthogonalReactionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/executionorder/ParentFirstOrthogonalReactions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ParentFirstOrthogonalReactions.sgen");
+	
+	
 	
 	@Before
 	public void parentFirstOrthogonalReactions_setUp() {
+		helper.generate();
+		
 		statemachine = new ParentFirstOrthogonalReactionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

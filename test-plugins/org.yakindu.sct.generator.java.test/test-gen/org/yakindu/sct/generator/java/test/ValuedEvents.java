@@ -19,9 +19,16 @@ public class ValuedEvents {
 	private ValuedEventsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/ValuedEvents.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ValuedEvents.sgen");
+	
+	
 	
 	@Before
 	public void valuedEvents_setUp() {
+		helper.generate();
+		
 		statemachine = new ValuedEventsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

@@ -19,9 +19,16 @@ public class TriggerGuardExpressions {
 	private TriggerGuardExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/TriggerGuardExpressions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/TriggerGuardExpressions.sgen");
+	
+	
 	
 	@Before
 	public void triggerGuardExpressions_setUp() {
+		helper.generate();
+		
 		statemachine = new TriggerGuardExpressionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

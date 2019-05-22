@@ -17,9 +17,16 @@ public class EventDrivenTriggeredByEvent {
 	private EventDrivenTriggeredByEventStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/eventdriven/EventDrivenTriggeredByEvent.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/EventDrivenTriggeredByEvent.sgen");
+	
+	
 	
 	@Before
 	public void eventDrivenTriggeredByEvent_setUp() {
+		helper.generate();
+		
 		statemachine = new EventDrivenTriggeredByEventStatemachine();
 		timer = new VirtualTimer(200);
 		statemachine.setTimer(timer);

@@ -19,9 +19,16 @@ public class FeatureCalls {
 	private FeatureCallsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/FeatureCalls.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/FeatureCalls.sgen");
+	
+	
 	
 	@Before
 	public void featureCalls_setUp() {
+		helper.generate();
+		
 		statemachine = new FeatureCallsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

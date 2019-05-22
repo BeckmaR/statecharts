@@ -19,9 +19,16 @@ public class EmptyTransition {
 	private EmptyTransitionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/EmptyTransition.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/EmptyTransition.sgen");
+	
+	
 	
 	@Before
 	public void emptyTransition_setUp() {
+		helper.generate();
+		
 		statemachine = new EmptyTransitionStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

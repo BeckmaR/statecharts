@@ -19,9 +19,16 @@ public class OutEventLifeCycle {
 	private OutEventLifeCycleStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/OutEventLifeCycle.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/OutEventLifeCycle.sgen");
+	
+	
 	
 	@Before
 	public void outEventLifeCycle_setUp() {
+		helper.generate();
+		
 		statemachine = new OutEventLifeCycleStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

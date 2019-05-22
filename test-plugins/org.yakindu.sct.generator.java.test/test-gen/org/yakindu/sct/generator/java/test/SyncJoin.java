@@ -19,9 +19,16 @@ public class SyncJoin {
 	private SyncJoinStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/SyncJoin.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/SyncJoin.sgen");
+	
+	
 	
 	@Before
 	public void syncJoin_setUp() {
+		helper.generate();
+		
 		statemachine = new SyncJoinStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

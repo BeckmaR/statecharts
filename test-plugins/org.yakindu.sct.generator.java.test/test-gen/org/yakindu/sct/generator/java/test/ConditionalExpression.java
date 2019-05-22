@@ -19,9 +19,16 @@ public class ConditionalExpression {
 	private ConditionalExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/ConditionalExpressions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ConditionalExpressions.sgen");
+	
+	
 	
 	@Before
 	public void conditionalExpression_setUp() {
+		helper.generate();
+		
 		statemachine = new ConditionalExpressionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

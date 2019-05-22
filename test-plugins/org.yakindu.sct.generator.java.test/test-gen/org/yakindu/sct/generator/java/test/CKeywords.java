@@ -19,9 +19,16 @@ public class CKeywords {
 	private CKeywordsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/CKeywords.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/CKeywords.sgen");
+	
+	
 	
 	@Before
 	public void cKeywords_setUp() {
+		helper.generate();
+		
 		statemachine = new CKeywordsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

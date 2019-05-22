@@ -19,9 +19,16 @@ public class BitwiseExecutionOrder {
 	private BitwiseExecutionOrderStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/BitwiseExecutionOrder.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/BitwiseExecutionOrder.sgen");
+	
+	
 	
 	@Before
 	public void bitwiseExecutionOrder_setUp() {
+		helper.generate();
+		
 		statemachine = new BitwiseExecutionOrderStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

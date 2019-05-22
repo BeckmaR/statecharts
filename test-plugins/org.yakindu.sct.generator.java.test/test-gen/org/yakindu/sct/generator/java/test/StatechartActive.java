@@ -19,9 +19,16 @@ public class StatechartActive {
 	private StatechartActiveStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/StatechartActive.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/StatechartActive.sgen");
+	
+	
 	
 	@Before
 	public void statechartActive_setUp() {
+		helper.generate();
+		
 		statemachine = new StatechartActiveStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

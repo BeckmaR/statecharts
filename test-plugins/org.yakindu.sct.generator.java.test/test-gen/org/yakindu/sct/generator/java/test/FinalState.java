@@ -19,9 +19,16 @@ public class FinalState {
 	private FinalStateStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/FinalState.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/FinalState.sgen");
+	
+	
 	
 	@Before
 	public void finalState_setUp() {
+		helper.generate();
+		
 		statemachine = new FinalStateStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

@@ -19,9 +19,16 @@ public class StaticChoice {
 	private StaticChoiceStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/StaticChoice.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/StaticChoice.sgen");
+	
+	
 	
 	@Before
 	public void staticChoice_setUp() {
+		helper.generate();
+		
 		statemachine = new StaticChoiceStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

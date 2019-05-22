@@ -27,9 +27,16 @@ public class StatemachineKeywords {
 	private StatechartKeywordsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/StatechartKeywords.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/StatechartKeywords.sgen");
+	
+	
 	
 	@Before
 	public void statemachineKeywords_setUp() {
+		helper.generate();
+		
 		statemachine = new StatechartKeywordsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

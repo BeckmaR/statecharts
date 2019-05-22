@@ -19,9 +19,16 @@ public class ChildFirstExecutionHierarchy {
 	private ChildFirstExecutionHierarchyStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/executionorder/ChildFirstExecutionHierarchy.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstExecutionHierarchy.sgen");
+	
+	
 	
 	@Before
 	public void childFirstExecutionHierarchy_setUp() {
+		helper.generate();
+		
 		statemachine = new ChildFirstExecutionHierarchyStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

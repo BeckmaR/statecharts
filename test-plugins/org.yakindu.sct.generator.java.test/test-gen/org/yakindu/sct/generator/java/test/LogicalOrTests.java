@@ -19,9 +19,16 @@ public class LogicalOrTests {
 	private LogicalOrStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/LogicalOr.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/LogicalOr.sgen");
+	
+	
 	
 	@Before
 	public void logicalOrTests_setUp() {
+		helper.generate();
+		
 		statemachine = new LogicalOrStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

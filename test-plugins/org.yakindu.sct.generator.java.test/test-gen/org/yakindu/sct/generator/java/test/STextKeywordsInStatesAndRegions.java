@@ -19,9 +19,16 @@ public class STextKeywordsInStatesAndRegions {
 	private STextKeywordsInStatesAndRegionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/STextKeywordsInStatesAndRegions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/STextKeywordsInStatesAndRegions.sgen");
+	
+	
 	
 	@Before
 	public void sTextKeywordsInStatesAndRegions_setUp() {
+		helper.generate();
+		
 		statemachine = new STextKeywordsInStatesAndRegionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

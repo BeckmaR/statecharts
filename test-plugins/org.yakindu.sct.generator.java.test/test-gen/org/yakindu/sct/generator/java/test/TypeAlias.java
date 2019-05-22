@@ -19,9 +19,16 @@ public class TypeAlias {
 	private TypeAliasStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/TypeAlias.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/TypeAlias.sgen");
+	
+	
 	
 	@Before
 	public void typeAlias_setUp() {
+		helper.generate();
+		
 		statemachine = new TypeAliasStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

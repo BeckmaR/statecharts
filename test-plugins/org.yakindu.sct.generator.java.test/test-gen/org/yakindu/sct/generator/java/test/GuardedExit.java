@@ -19,9 +19,16 @@ public class GuardedExit {
 	private GuardedExitStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/GuardedExit.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/GuardedExit.sgen");
+	
+	
 	
 	@Before
 	public void guardedExit_setUp() {
+		helper.generate();
+		
 		statemachine = new GuardedExitStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

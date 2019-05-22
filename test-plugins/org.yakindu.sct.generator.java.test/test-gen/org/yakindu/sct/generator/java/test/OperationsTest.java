@@ -28,9 +28,16 @@ public class OperationsTest {
 	private OperationsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/Operations.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/Operations.sgen");
+	
+	
 	
 	@Before
 	public void operationsTest_setUp() {
+		helper.generate();
+		
 		statemachine = new OperationsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

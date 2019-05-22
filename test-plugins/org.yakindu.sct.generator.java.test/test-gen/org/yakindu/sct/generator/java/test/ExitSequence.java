@@ -16,9 +16,16 @@ public class ExitSequence {
 	
 	private ExitSequenceStatemachine statemachine;	
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/ExitSequence.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ExitSequence.sgen");
+	
+	
 	
 	@Before
 	public void exitSequence_setUp() {
+		helper.generate();
+		
 		statemachine = new ExitSequenceStatemachine();
 		
 		statemachine.init();

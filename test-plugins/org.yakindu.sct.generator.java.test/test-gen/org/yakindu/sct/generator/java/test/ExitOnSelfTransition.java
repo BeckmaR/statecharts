@@ -19,9 +19,16 @@ public class ExitOnSelfTransition {
 	private ExitOnSelfTransitionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/ExitOnSelfTransition.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ExitOnSelfTransition.sgen");
+	
+	
 	
 	@Before
 	public void exitOnSelfTransition_setUp() {
+		helper.generate();
+		
 		statemachine = new ExitOnSelfTransitionStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

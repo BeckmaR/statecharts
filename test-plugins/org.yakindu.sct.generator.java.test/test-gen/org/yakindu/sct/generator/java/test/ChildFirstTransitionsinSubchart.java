@@ -26,9 +26,16 @@ public class ChildFirstTransitionsinSubchart {
 	private ChildFirstTransitionsInSubchartStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/executionorder/ChildFirstTransitionsInSubchart.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstTransitionsInSubchart.sgen");
+	
+	
 	
 	@Before
 	public void childFirstTransitionsinSubchart_setUp() {
+		helper.generate();
+		
 		statemachine = new ChildFirstTransitionsInSubchartStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

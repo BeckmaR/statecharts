@@ -19,9 +19,16 @@ public class TimedTransitions {
 	private TimedTransitionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/TimedTransitions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/TimedTransitions.sgen");
+	
+	
 	
 	@Before
 	public void timedTransitions_setUp() {
+		helper.generate();
+		
 		statemachine = new TimedTransitionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

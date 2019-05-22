@@ -19,9 +19,16 @@ public class StatechartEntryExitActions {
 	private StatechartEntryAndExitActionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/statechartactions/StatechartEntryAndExitActions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/StatechartEntryAndExitActions.sgen");
+	
+	
 	
 	@Before
 	public void statechartEntryExitActions_setUp() {
+		helper.generate();
+		
 		statemachine = new StatechartEntryAndExitActionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);
@@ -48,27 +55,8 @@ public class StatechartEntryExitActions {
 	}
 	
 	@Test
-	public void entryActionsAreExecutedOnEnteringStatechartOnlyIfGuardIsTrue() {
-		assertTrue(statemachine.getX() == 0l);
-		assertTrue(statemachine.getY() == 0l);
-		statemachine.getSCInterface().setB(false);
-		statemachine.enter();
-		assertTrue(statemachine.getX() == 2l);
-		assertTrue(statemachine.getY() == 3l);
-	}
-	
-	@Test
 	public void exitActionsAreExecutedOnEnteringStatechart() {
 		statemachine.enter();
-		statemachine.exit();
-		assertTrue(statemachine.getX() == 8l);
-		assertTrue(statemachine.getY() == 2l);
-	}
-	
-	@Test
-	public void exitActionsAreExecutedOnEnteringStatechartOnlyIfGuardIsTrue() {
-		statemachine.enter();
-		statemachine.getSCInterface().setB(true);
 		statemachine.exit();
 		assertTrue(statemachine.getX() == 6l);
 		assertTrue(statemachine.getY() == 2l);

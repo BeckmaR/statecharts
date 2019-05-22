@@ -19,9 +19,16 @@ public class ConstOnlyInternalScope {
 	private ConstOnlyInternalScopeStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/declarations/ConstOnlyInternalScope.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ConstOnlyInternalScope.sgen");
+	
+	
 	
 	@Before
 	public void constOnlyInternalScope_setUp() {
+		helper.generate();
+		
 		statemachine = new ConstOnlyInternalScopeStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

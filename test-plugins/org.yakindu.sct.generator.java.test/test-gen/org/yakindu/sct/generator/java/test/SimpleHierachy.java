@@ -19,9 +19,16 @@ public class SimpleHierachy {
 	private SimpleHierachyStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/SimpleHierachy.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/SimpleHierachy.sgen");
+	
+	
 	
 	@Before
 	public void simpleHierachy_setUp() {
+		helper.generate();
+		
 		statemachine = new SimpleHierachyStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

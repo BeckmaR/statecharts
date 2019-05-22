@@ -19,9 +19,16 @@ public class LogicalAndTests {
 	private LogicalAndStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/LogicalAnd.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/LogicalAnd.sgen");
+	
+	
 	
 	@Before
 	public void logicalAndTests_setUp() {
+		helper.generate();
+		
 		statemachine = new LogicalAndStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

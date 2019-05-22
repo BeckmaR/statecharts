@@ -19,9 +19,16 @@ public class DeepEntry {
 	private DeepEntryStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/DeepEntry.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/DeepEntry.sgen");
+	
+	
 	
 	@Before
 	public void deepEntry_setUp() {
+		helper.generate();
+		
 		statemachine = new DeepEntryStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

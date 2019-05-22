@@ -16,9 +16,16 @@ public class EventDrivenInternalEvent {
 	
 	private EventDrivenInternalEventStatemachine statemachine;	
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/eventdriven/EventDrivenInternalEvent.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/EventDrivenInternalEvent.sgen");
+	
+	
 	
 	@Before
 	public void eventDrivenInternalEvent_setUp() {
+		helper.generate();
+		
 		statemachine = new EventDrivenInternalEventStatemachine();
 		
 		statemachine.init();

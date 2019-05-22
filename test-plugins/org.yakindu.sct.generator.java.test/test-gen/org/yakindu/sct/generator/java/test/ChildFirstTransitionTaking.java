@@ -16,9 +16,16 @@ public class ChildFirstTransitionTaking {
 	
 	private ChildFirstTransitionTakingStatemachine statemachine;	
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/executionorder/ChildFirstTransitionTaking.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstTransitionTaking.sgen");
+	
+	
 	
 	@Before
 	public void childFirstTransitionTaking_setUp() {
+		helper.generate();
+		
 		statemachine = new ChildFirstTransitionTakingStatemachine();
 		
 		statemachine.init();

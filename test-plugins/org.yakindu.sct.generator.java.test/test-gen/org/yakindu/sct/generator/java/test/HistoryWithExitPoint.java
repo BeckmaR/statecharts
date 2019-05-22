@@ -19,9 +19,16 @@ public class HistoryWithExitPoint {
 	private HistoryWithExitPointStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/HistoryWithExitPoint.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/HistoryWithExitPoint.sgen");
+	
+	
 	
 	@Before
 	public void historyWithExitPoint_setUp() {
+		helper.generate();
+		
 		statemachine = new HistoryWithExitPointStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

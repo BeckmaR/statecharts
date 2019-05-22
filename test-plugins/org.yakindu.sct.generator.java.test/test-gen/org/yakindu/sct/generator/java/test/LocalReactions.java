@@ -19,9 +19,16 @@ public class LocalReactions {
 	private LocalReactionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/LocalReactions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/LocalReactions.sgen");
+	
+	
 	
 	@Before
 	public void localReactions_setUp() {
+		helper.generate();
+		
 		statemachine = new LocalReactionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

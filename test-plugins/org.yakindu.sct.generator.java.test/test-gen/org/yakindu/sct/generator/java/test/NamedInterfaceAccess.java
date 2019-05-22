@@ -19,9 +19,16 @@ public class NamedInterfaceAccess {
 	private NamedInterfaceAccessStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/NamedInterfaceAccess.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/NamedInterfaceAccess.sgen");
+	
+	
 	
 	@Before
 	public void namedInterfaceAccess_setUp() {
+		helper.generate();
+		
 		statemachine = new NamedInterfaceAccessStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

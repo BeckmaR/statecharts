@@ -19,9 +19,16 @@ public class RaiseEvent {
 	private RaiseEventStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/RaiseEvent.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/RaiseEvent.sgen");
+	
+	
 	
 	@Before
 	public void raiseEvent_setUp() {
+		helper.generate();
+		
 		statemachine = new RaiseEventStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

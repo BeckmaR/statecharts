@@ -19,9 +19,16 @@ public class GuardedEntry {
 	private GuardedEntryStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/GuardedEntry.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/GuardedEntry.sgen");
+	
+	
 	
 	@Before
 	public void guardedEntry_setUp() {
+		helper.generate();
+		
 		statemachine = new GuardedEntryStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

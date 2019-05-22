@@ -19,9 +19,16 @@ public class EntryReactionAction {
 	private EntryReactionActionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/entries/EntryReactionAction.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/EntryReactionAction.sgen");
+	
+	
 	
 	@Before
 	public void entryReactionAction_setUp() {
+		helper.generate();
+		
 		statemachine = new EntryReactionActionStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

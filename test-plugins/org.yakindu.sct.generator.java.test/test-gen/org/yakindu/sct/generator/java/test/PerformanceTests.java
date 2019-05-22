@@ -19,9 +19,16 @@ public class PerformanceTests {
 	private PerformanceTestStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/PerformanceTest.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/PerformanceTest.sgen");
+	
+	
 	
 	@Before
 	public void performanceTests_setUp() {
+		helper.generate();
+		
 		statemachine = new PerformanceTestStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

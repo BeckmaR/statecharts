@@ -19,9 +19,16 @@ public class CastExpressions {
 	private CastExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/CastExpressions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/CastExpressions.sgen");
+	
+	
 	
 	@Before
 	public void castExpressions_setUp() {
+		helper.generate();
+		
 		statemachine = new CastExpressionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

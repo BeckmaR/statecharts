@@ -19,9 +19,16 @@ public class ConstantsVariationTests {
 	private ConstantsVariationStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/ConstantsVariation.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ConstantsVariation.sgen");
+	
+	
 	
 	@Before
 	public void constantsVariationTests_setUp() {
+		helper.generate();
+		
 		statemachine = new ConstantsVariationStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

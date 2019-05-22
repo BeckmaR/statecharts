@@ -19,9 +19,16 @@ public class Parenthesis {
 	private ParenthesisStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/Parenthesis.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/Parenthesis.sgen");
+	
+	
 	
 	@Before
 	public void parenthesis_setUp() {
+		helper.generate();
+		
 		statemachine = new ParenthesisStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

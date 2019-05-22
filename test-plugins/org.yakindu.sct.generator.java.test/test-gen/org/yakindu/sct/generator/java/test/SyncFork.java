@@ -19,9 +19,16 @@ public class SyncFork {
 	private SyncForkStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/SyncFork.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/SyncFork.sgen");
+	
+	
 	
 	@Before
 	public void syncFork_setUp() {
+		helper.generate();
+		
 		statemachine = new SyncForkStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

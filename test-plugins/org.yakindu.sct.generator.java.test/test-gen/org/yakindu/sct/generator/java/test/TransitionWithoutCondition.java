@@ -19,9 +19,16 @@ public class TransitionWithoutCondition {
 	private TransitionWithoutConditionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/TransitionWithoutCondition.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/TransitionWithoutCondition.sgen");
+	
+	
 	
 	@Before
 	public void transitionWithoutCondition_setUp() {
+		helper.generate();
+		
 		statemachine = new TransitionWithoutConditionStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

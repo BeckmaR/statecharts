@@ -19,9 +19,16 @@ public class IntegerExpressions {
 	private IntegerExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/IntegerExpressions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/IntegerExpressions.sgen");
+	
+	
 	
 	@Before
 	public void integerExpressions_setUp() {
+		helper.generate();
+		
 		statemachine = new IntegerExpressionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

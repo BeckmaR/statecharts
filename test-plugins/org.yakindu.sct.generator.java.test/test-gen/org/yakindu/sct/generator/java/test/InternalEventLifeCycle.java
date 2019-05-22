@@ -19,9 +19,16 @@ public class InternalEventLifeCycle {
 	private InternalEventLifeCycleStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/InternalEventLifeCycle.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/InternalEventLifeCycle.sgen");
+	
+	
 	
 	@Before
 	public void internalEventLifeCycle_setUp() {
+		helper.generate();
+		
 		statemachine = new InternalEventLifeCycleStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

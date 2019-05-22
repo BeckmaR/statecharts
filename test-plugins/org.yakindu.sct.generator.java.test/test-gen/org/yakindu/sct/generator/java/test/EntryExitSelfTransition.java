@@ -19,9 +19,16 @@ public class EntryExitSelfTransition {
 	private EntryExitSelfTransitionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/EntryExitSelfTransition.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/EntryExitSelfTransition.sgen");
+	
+	
 	
 	@Before
 	public void entryExitSelfTransition_setUp() {
+		helper.generate();
+		
 		statemachine = new EntryExitSelfTransitionStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

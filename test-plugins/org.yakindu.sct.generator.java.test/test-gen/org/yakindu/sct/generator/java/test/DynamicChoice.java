@@ -19,9 +19,16 @@ public class DynamicChoice {
 	private DynamicChoiceStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/DynamicChoice.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/DynamicChoice.sgen");
+	
+	
 	
 	@Before
 	public void dynamicChoice_setUp() {
+		helper.generate();
+		
 		statemachine = new DynamicChoiceStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

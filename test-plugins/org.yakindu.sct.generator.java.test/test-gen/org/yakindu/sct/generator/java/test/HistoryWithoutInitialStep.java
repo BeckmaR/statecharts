@@ -19,9 +19,16 @@ public class HistoryWithoutInitialStep {
 	private HistoryWithoutInitialStepStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/HistoryWithoutInitialStep.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/HistoryWithoutInitialStep.sgen");
+	
+	
 	
 	@Before
 	public void historyWithoutInitialStep_setUp() {
+		helper.generate();
+		
 		statemachine = new HistoryWithoutInitialStepStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

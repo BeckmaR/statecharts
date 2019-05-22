@@ -19,9 +19,16 @@ public class BitExpressions {
 	private BitExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/BitExpressions.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/BitExpressions.sgen");
+	
+	
 	
 	@Before
 	public void bitExpressions_setUp() {
+		helper.generate();
+		
 		statemachine = new BitExpressionsStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

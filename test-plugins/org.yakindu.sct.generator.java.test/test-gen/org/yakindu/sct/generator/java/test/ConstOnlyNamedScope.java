@@ -19,9 +19,16 @@ public class ConstOnlyNamedScope {
 	private ConstOnlyNamedScopeStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/declarations/ConstOnlyNamedScope.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ConstOnlyNamedScope.sgen");
+	
+	
 	
 	@Before
 	public void constOnlyNamedScope_setUp() {
+		helper.generate();
+		
 		statemachine = new ConstOnlyNamedScopeStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

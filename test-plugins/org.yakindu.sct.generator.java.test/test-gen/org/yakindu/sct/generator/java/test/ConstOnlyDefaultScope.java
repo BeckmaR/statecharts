@@ -19,9 +19,16 @@ public class ConstOnlyDefaultScope {
 	private ConstOnlyDefaultScopeStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/declarations/ConstOnlyDefaultScope.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ConstOnlyDefaultScope.sgen");
+	
+	
 	
 	@Before
 	public void constOnlyDefaultScope_setUp() {
+		helper.generate();
+		
 		statemachine = new ConstOnlyDefaultScopeStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

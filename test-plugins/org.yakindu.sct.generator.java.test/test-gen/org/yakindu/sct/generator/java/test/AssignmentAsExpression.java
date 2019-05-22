@@ -19,9 +19,16 @@ public class AssignmentAsExpression {
 	private AssignmentAsExpressionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/AssignmentAsExpression.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/AssignmentAsExpression.sgen");
+	
+	
 	
 	@Before
 	public void assignmentAsExpression_setUp() {
+		helper.generate();
+		
 		statemachine = new AssignmentAsExpressionStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

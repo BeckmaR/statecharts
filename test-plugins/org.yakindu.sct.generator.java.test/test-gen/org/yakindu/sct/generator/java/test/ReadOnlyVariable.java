@@ -19,9 +19,16 @@ public class ReadOnlyVariable {
 	private ReadOnlyVariableStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/ReadOnlyVariable.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/ReadOnlyVariable.sgen");
+	
+	
 	
 	@Before
 	public void readOnlyVariable_setUp() {
+		helper.generate();
+		
 		statemachine = new ReadOnlyVariableStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

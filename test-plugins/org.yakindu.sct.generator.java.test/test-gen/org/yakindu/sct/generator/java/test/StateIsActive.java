@@ -19,9 +19,16 @@ public class StateIsActive {
 	private StateIsActiveStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/StateIsActive.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/StateIsActive.sgen");
+	
+	
 	
 	@Before
 	public void stateIsActive_setUp() {
+		helper.generate();
+		
 		statemachine = new StateIsActiveStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);
