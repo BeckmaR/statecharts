@@ -49,7 +49,7 @@ class InterfaceLiftingModification implements IModification {
 	}
 
 	def modify(Package p) {
-		p.allTopLevelComplexTypes.forEach [ ct |
+		p.statemachineTypes.forEach [ ct |
 			
 			val outerInterface = ct.statemachineInterfaceType
 			p.member += outerInterface
@@ -74,6 +74,10 @@ class InterfaceLiftingModification implements IModification {
 			]
 		]
 		return p
+	}
+	
+	def getStatemachineTypes(Package p) {
+		p.allTopLevelComplexTypes.filter[getAnnotationOfType("StatemachineType") !== null].toList
 	}
 	
 	def getInterfaceGroupTypes(ComplexType ct) {
