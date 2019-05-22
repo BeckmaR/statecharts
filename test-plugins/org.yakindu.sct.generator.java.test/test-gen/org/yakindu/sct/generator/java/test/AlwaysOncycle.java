@@ -4,6 +4,10 @@ package org.yakindu.sct.generator.java.test;
 
 import org.junit.*;
 import static org.junit.Assert.*;
+
+import java.io.IOException;
+
+import org.eclipse.core.runtime.CoreException;
 import org.yakindu.scr.alwaysoncycle.AlwaysOncycleStatemachine;
 import org.yakindu.scr.alwaysoncycle.AlwaysOncycleStatemachine.State;	
 import org.yakindu.scr.VirtualTimer;
@@ -19,9 +23,14 @@ public class AlwaysOncycle {
 	private AlwaysOncycleStatemachine statemachine;	
 	private VirtualTimer timer;
 	
+	private TestModelGenerator helper = new TestModelGenerator(
+			"testmodels/SCTUnit/AlwaysOncycle.sct", 
+			"test-gen/org/yakindu/sct/generator/java/test/AlwaysOncycle.sgen");
 	
 	@Before
 	public void alwaysOncycle_setUp() {
+		helper.generate();
+		
 		statemachine = new AlwaysOncycleStatemachine();
 		timer = new VirtualTimer(200);
 		timer.schedulePeriodicalTask(new CycleTimeEventTask(statemachine), 200, 200);

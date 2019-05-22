@@ -15,3 +15,4 @@ Require-Bundle: com.google.guava,
  org.yakindu.sct.model.stext,
  org.yakindu.sct.types.generator.java,
  org.yakindu.sct.model.sequencer
+Export-Package: org.yakindu.sct.types.generator.statechart.java
