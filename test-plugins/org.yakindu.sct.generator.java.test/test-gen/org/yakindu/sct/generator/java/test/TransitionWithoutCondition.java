@@ -19,15 +19,15 @@ public class TransitionWithoutCondition {
 	private TransitionWithoutConditionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/TransitionWithoutCondition.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/TransitionWithoutCondition.sgen");
-	
-	
 	
 	@Before
 	public void transitionWithoutCondition_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/TransitionWithoutCondition.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/TransitionWithoutCondition.sgen"
+		);
 		
 		statemachine = new TransitionWithoutConditionStatemachine();
 		timer = new VirtualTimer(200);

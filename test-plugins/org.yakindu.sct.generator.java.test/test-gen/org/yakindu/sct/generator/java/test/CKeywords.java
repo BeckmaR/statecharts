@@ -19,15 +19,15 @@ public class CKeywords {
 	private CKeywordsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/CKeywords.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/CKeywords.sgen");
-	
-	
 	
 	@Before
 	public void cKeywords_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/CKeywords.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/CKeywords.sgen"
+		);
 		
 		statemachine = new CKeywordsStatemachine();
 		timer = new VirtualTimer(200);

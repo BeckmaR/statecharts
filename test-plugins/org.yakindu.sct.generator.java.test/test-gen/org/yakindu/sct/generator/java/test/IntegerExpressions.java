@@ -19,15 +19,15 @@ public class IntegerExpressions {
 	private IntegerExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/IntegerExpressions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/IntegerExpressions.sgen");
-	
-	
 	
 	@Before
 	public void integerExpressions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/IntegerExpressions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/IntegerExpressions.sgen"
+		);
 		
 		statemachine = new IntegerExpressionsStatemachine();
 		timer = new VirtualTimer(200);

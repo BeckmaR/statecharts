@@ -19,15 +19,15 @@ public class Choice {
 	private ChoiceStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/Choice.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/Choice.sgen");
-	
-	
 	
 	@Before
 	public void choice_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/Choice.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/Choice.sgen"
+		);
 		
 		statemachine = new ChoiceStatemachine();
 		timer = new VirtualTimer(200);

@@ -19,15 +19,15 @@ public class ShallowHistory {
 	private ShallowHistoryStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/ShallowHistory.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ShallowHistory.sgen");
-	
-	
 	
 	@Before
 	public void shallowHistory_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/ShallowHistory.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ShallowHistory.sgen"
+		);
 		
 		statemachine = new ShallowHistoryStatemachine();
 		timer = new VirtualTimer(200);

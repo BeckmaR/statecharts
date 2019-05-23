@@ -19,15 +19,15 @@ public class ExitOnSelfTransition {
 	private ExitOnSelfTransitionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/ExitOnSelfTransition.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ExitOnSelfTransition.sgen");
-	
-	
 	
 	@Before
 	public void exitOnSelfTransition_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/ExitOnSelfTransition.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ExitOnSelfTransition.sgen"
+		);
 		
 		statemachine = new ExitOnSelfTransitionStatemachine();
 		timer = new VirtualTimer(200);

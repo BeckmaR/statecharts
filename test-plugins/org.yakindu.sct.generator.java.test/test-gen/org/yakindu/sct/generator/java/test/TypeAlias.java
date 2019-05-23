@@ -19,15 +19,15 @@ public class TypeAlias {
 	private TypeAliasStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/TypeAlias.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/TypeAlias.sgen");
-	
-	
 	
 	@Before
 	public void typeAlias_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/TypeAlias.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/TypeAlias.sgen"
+		);
 		
 		statemachine = new TypeAliasStatemachine();
 		timer = new VirtualTimer(200);

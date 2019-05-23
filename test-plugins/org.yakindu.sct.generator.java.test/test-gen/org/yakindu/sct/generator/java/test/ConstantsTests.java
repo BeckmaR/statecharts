@@ -19,15 +19,15 @@ public class ConstantsTests {
 	private ConstantsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/Constants.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/Constants.sgen");
-	
-	
 	
 	@Before
 	public void constantsTests_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/Constants.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/Constants.sgen"
+		);
 		
 		statemachine = new ConstantsStatemachine();
 		timer = new VirtualTimer(200);

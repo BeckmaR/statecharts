@@ -19,15 +19,15 @@ public class NamedInterfaceAccess {
 	private NamedInterfaceAccessStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/NamedInterfaceAccess.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/NamedInterfaceAccess.sgen");
-	
-	
 	
 	@Before
 	public void namedInterfaceAccess_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/NamedInterfaceAccess.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/NamedInterfaceAccess.sgen"
+		);
 		
 		statemachine = new NamedInterfaceAccessStatemachine();
 		timer = new VirtualTimer(200);

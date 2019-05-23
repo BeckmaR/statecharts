@@ -19,15 +19,15 @@ public class StringExpressions {
 	private StringExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/StringExpressions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/StringExpressions.sgen");
-	
-	
 	
 	@Before
 	public void stringExpressions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/StringExpressions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/StringExpressions.sgen"
+		);
 		
 		statemachine = new StringExpressionsStatemachine();
 		timer = new VirtualTimer(200);

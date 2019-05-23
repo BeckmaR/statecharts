@@ -26,15 +26,15 @@ public class ChildFirstOrthogonalReactions {
 	private ChildFirstOrthogonalReactionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/executionorder/ChildFirstOrthogonalReactions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstOrthogonalReactions.sgen");
-	
-	
 	
 	@Before
 	public void childFirstOrthogonalReactions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/executionorder/ChildFirstOrthogonalReactions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstOrthogonalReactions.sgen"
+		);
 		
 		statemachine = new ChildFirstOrthogonalReactionsStatemachine();
 		timer = new VirtualTimer(200);

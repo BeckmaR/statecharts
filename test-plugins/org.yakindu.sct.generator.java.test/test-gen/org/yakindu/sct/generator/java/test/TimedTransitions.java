@@ -19,15 +19,15 @@ public class TimedTransitions {
 	private TimedTransitionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/TimedTransitions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/TimedTransitions.sgen");
-	
-	
 	
 	@Before
 	public void timedTransitions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/TimedTransitions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/TimedTransitions.sgen"
+		);
 		
 		statemachine = new TimedTransitionsStatemachine();
 		timer = new VirtualTimer(200);

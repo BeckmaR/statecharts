@@ -19,15 +19,15 @@ public class DeepHistory {
 	private DeepHistoryStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/DeepHistory.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/DeepHistory.sgen");
-	
-	
 	
 	@Before
 	public void deepHistory_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/DeepHistory.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/DeepHistory.sgen"
+		);
 		
 		statemachine = new DeepHistoryStatemachine();
 		timer = new VirtualTimer(200);

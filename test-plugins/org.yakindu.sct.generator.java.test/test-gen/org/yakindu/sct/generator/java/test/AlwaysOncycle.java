@@ -19,15 +19,15 @@ public class AlwaysOncycle {
 	private AlwaysOncycleStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/AlwaysOncycle.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/AlwaysOncycle.sgen");
-	
-	
 	
 	@Before
 	public void alwaysOncycle_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/AlwaysOncycle.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/AlwaysOncycle.sgen"
+		);
 		
 		statemachine = new AlwaysOncycleStatemachine();
 		timer = new VirtualTimer(200);

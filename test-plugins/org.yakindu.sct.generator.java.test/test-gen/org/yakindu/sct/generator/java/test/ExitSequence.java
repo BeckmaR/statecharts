@@ -16,15 +16,15 @@ public class ExitSequence {
 	
 	private ExitSequenceStatemachine statemachine;	
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/ExitSequence.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ExitSequence.sgen");
-	
-	
 	
 	@Before
 	public void exitSequence_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/ExitSequence.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ExitSequence.sgen"
+		);
 		
 		statemachine = new ExitSequenceStatemachine();
 		

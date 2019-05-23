@@ -19,15 +19,15 @@ public class OutEventLifeCycle {
 	private OutEventLifeCycleStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/OutEventLifeCycle.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/OutEventLifeCycle.sgen");
-	
-	
 	
 	@Before
 	public void outEventLifeCycle_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/OutEventLifeCycle.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/OutEventLifeCycle.sgen"
+		);
 		
 		statemachine = new OutEventLifeCycleStatemachine();
 		timer = new VirtualTimer(200);

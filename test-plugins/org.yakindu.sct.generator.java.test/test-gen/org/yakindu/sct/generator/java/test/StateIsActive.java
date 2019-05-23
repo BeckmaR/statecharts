@@ -19,15 +19,15 @@ public class StateIsActive {
 	private StateIsActiveStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/StateIsActive.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/StateIsActive.sgen");
-	
-	
 	
 	@Before
 	public void stateIsActive_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/StateIsActive.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/StateIsActive.sgen"
+		);
 		
 		statemachine = new StateIsActiveStatemachine();
 		timer = new VirtualTimer(200);

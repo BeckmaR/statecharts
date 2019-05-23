@@ -19,15 +19,15 @@ public class HistoryWithExitPoint {
 	private HistoryWithExitPointStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/HistoryWithExitPoint.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/HistoryWithExitPoint.sgen");
-	
-	
 	
 	@Before
 	public void historyWithExitPoint_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/HistoryWithExitPoint.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/HistoryWithExitPoint.sgen"
+		);
 		
 		statemachine = new HistoryWithExitPointStatemachine();
 		timer = new VirtualTimer(200);

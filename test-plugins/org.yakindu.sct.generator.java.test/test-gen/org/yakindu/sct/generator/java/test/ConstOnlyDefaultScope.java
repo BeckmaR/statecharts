@@ -19,15 +19,15 @@ public class ConstOnlyDefaultScope {
 	private ConstOnlyDefaultScopeStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/declarations/ConstOnlyDefaultScope.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ConstOnlyDefaultScope.sgen");
-	
-	
 	
 	@Before
 	public void constOnlyDefaultScope_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/declarations/ConstOnlyDefaultScope.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ConstOnlyDefaultScope.sgen"
+		);
 		
 		statemachine = new ConstOnlyDefaultScopeStatemachine();
 		timer = new VirtualTimer(200);

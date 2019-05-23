@@ -16,15 +16,15 @@ public class NoLocalEvents {
 	
 	private NoLocalEventsStatemachine statemachine;	
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/eventdriven/NoLocalEvents.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/NoLocalEvents.sgen");
-	
-	
 	
 	@Before
 	public void noLocalEvents_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/eventdriven/NoLocalEvents.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/NoLocalEvents.sgen"
+		);
 		
 		statemachine = new NoLocalEventsStatemachine();
 		

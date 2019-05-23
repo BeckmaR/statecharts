@@ -19,15 +19,15 @@ public class EntryReactionAction {
 	private EntryReactionActionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/entries/EntryReactionAction.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/EntryReactionAction.sgen");
-	
-	
 	
 	@Before
 	public void entryReactionAction_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/entries/EntryReactionAction.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/EntryReactionAction.sgen"
+		);
 		
 		statemachine = new EntryReactionActionStatemachine();
 		timer = new VirtualTimer(200);

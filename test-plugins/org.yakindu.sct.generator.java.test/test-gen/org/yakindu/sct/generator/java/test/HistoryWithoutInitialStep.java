@@ -19,15 +19,15 @@ public class HistoryWithoutInitialStep {
 	private HistoryWithoutInitialStepStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/HistoryWithoutInitialStep.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/HistoryWithoutInitialStep.sgen");
-	
-	
 	
 	@Before
 	public void historyWithoutInitialStep_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/HistoryWithoutInitialStep.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/HistoryWithoutInitialStep.sgen"
+		);
 		
 		statemachine = new HistoryWithoutInitialStepStatemachine();
 		timer = new VirtualTimer(200);

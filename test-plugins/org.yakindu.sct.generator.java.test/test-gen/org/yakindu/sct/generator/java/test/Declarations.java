@@ -19,15 +19,15 @@ public class Declarations {
 	private DeclarationsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/Declarations.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/Declarations.sgen");
-	
-	
 	
 	@Before
 	public void declarations_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/Declarations.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/Declarations.sgen"
+		);
 		
 		statemachine = new DeclarationsStatemachine();
 		timer = new VirtualTimer(200);

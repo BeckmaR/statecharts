@@ -19,15 +19,15 @@ public class SyncJoin {
 	private SyncJoinStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/SyncJoin.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/SyncJoin.sgen");
-	
-	
 	
 	@Before
 	public void syncJoin_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/SyncJoin.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/SyncJoin.sgen"
+		);
 		
 		statemachine = new SyncJoinStatemachine();
 		timer = new VirtualTimer(200);

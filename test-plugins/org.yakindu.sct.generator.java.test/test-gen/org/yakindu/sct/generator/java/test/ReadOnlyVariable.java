@@ -19,15 +19,15 @@ public class ReadOnlyVariable {
 	private ReadOnlyVariableStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/ReadOnlyVariable.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ReadOnlyVariable.sgen");
-	
-	
 	
 	@Before
 	public void readOnlyVariable_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/ReadOnlyVariable.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ReadOnlyVariable.sgen"
+		);
 		
 		statemachine = new ReadOnlyVariableStatemachine();
 		timer = new VirtualTimer(200);

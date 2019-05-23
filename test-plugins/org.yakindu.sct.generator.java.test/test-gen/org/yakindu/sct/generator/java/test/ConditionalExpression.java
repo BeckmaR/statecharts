@@ -19,15 +19,15 @@ public class ConditionalExpression {
 	private ConditionalExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/ConditionalExpressions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ConditionalExpressions.sgen");
-	
-	
 	
 	@Before
 	public void conditionalExpression_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/ConditionalExpressions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ConditionalExpressions.sgen"
+		);
 		
 		statemachine = new ConditionalExpressionsStatemachine();
 		timer = new VirtualTimer(200);

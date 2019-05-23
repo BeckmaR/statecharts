@@ -19,15 +19,15 @@ public class Guard {
 	private GuardStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/Guard.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/Guard.sgen");
-	
-	
 	
 	@Before
 	public void guard_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/Guard.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/Guard.sgen"
+		);
 		
 		statemachine = new GuardStatemachine();
 		timer = new VirtualTimer(200);

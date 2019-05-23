@@ -19,15 +19,15 @@ public class FeatureCalls {
 	private FeatureCallsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/FeatureCalls.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/FeatureCalls.sgen");
-	
-	
 	
 	@Before
 	public void featureCalls_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/FeatureCalls.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/FeatureCalls.sgen"
+		);
 		
 		statemachine = new FeatureCallsStatemachine();
 		timer = new VirtualTimer(200);

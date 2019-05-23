@@ -19,15 +19,15 @@ public class SimpleEvent {
 	private SimpleEventStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/SimpleEvent.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/SimpleEvent.sgen");
-	
-	
 	
 	@Before
 	public void simpleEvent_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/SimpleEvent.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/SimpleEvent.sgen"
+		);
 		
 		statemachine = new SimpleEventStatemachine();
 		timer = new VirtualTimer(200);

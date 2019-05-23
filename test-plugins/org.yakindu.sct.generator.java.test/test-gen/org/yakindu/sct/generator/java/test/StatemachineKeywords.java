@@ -27,15 +27,15 @@ public class StatemachineKeywords {
 	private StatechartKeywordsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/StatechartKeywords.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/StatechartKeywords.sgen");
-	
-	
 	
 	@Before
 	public void statemachineKeywords_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/StatechartKeywords.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/StatechartKeywords.sgen"
+		);
 		
 		statemachine = new StatechartKeywordsStatemachine();
 		timer = new VirtualTimer(200);

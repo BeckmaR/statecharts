@@ -26,15 +26,15 @@ public class OperationsWithoutBraces {
 	private OperationsWithoutBracesStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/OperationsWithoutBraces.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/OperationsWithoutBraces.sgen");
-	
-	
 	
 	@Before
 	public void operationsWithoutBraces_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/OperationsWithoutBraces.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/OperationsWithoutBraces.sgen"
+		);
 		
 		statemachine = new OperationsWithoutBracesStatemachine();
 		timer = new VirtualTimer(200);

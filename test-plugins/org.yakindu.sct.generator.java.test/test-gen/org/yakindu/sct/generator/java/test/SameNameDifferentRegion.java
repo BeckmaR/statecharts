@@ -19,15 +19,15 @@ public class SameNameDifferentRegion {
 	private SameNameDifferentRegionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/SameNameDifferentRegion.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/SameNameDifferentRegion.sgen");
-	
-	
 	
 	@Before
 	public void sameNameDifferentRegion_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/SameNameDifferentRegion.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/SameNameDifferentRegion.sgen"
+		);
 		
 		statemachine = new SameNameDifferentRegionStatemachine();
 		timer = new VirtualTimer(200);

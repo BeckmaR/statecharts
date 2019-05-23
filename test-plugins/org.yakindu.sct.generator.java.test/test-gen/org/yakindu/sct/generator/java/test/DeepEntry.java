@@ -19,15 +19,15 @@ public class DeepEntry {
 	private DeepEntryStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/DeepEntry.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/DeepEntry.sgen");
-	
-	
 	
 	@Before
 	public void deepEntry_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/DeepEntry.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/DeepEntry.sgen"
+		);
 		
 		statemachine = new DeepEntryStatemachine();
 		timer = new VirtualTimer(200);

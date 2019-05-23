@@ -19,15 +19,15 @@ public class ConstOnlyInternalScope {
 	private ConstOnlyInternalScopeStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/declarations/ConstOnlyInternalScope.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ConstOnlyInternalScope.sgen");
-	
-	
 	
 	@Before
 	public void constOnlyInternalScope_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/declarations/ConstOnlyInternalScope.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ConstOnlyInternalScope.sgen"
+		);
 		
 		statemachine = new ConstOnlyInternalScopeStatemachine();
 		timer = new VirtualTimer(200);

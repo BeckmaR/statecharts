@@ -19,15 +19,15 @@ public class FinalState {
 	private FinalStateStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/FinalState.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/FinalState.sgen");
-	
-	
 	
 	@Before
 	public void finalState_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/FinalState.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/FinalState.sgen"
+		);
 		
 		statemachine = new FinalStateStatemachine();
 		timer = new VirtualTimer(200);

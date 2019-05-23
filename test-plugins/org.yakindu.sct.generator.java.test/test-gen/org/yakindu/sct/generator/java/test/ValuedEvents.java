@@ -19,15 +19,15 @@ public class ValuedEvents {
 	private ValuedEventsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/ValuedEvents.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ValuedEvents.sgen");
-	
-	
 	
 	@Before
 	public void valuedEvents_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/ValuedEvents.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ValuedEvents.sgen"
+		);
 		
 		statemachine = new ValuedEventsStatemachine();
 		timer = new VirtualTimer(200);

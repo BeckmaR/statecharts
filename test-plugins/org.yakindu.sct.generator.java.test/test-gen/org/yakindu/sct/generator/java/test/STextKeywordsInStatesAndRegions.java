@@ -19,15 +19,15 @@ public class STextKeywordsInStatesAndRegions {
 	private STextKeywordsInStatesAndRegionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/STextKeywordsInStatesAndRegions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/STextKeywordsInStatesAndRegions.sgen");
-	
-	
 	
 	@Before
 	public void sTextKeywordsInStatesAndRegions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/STextKeywordsInStatesAndRegions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/STextKeywordsInStatesAndRegions.sgen"
+		);
 		
 		statemachine = new STextKeywordsInStatesAndRegionsStatemachine();
 		timer = new VirtualTimer(200);

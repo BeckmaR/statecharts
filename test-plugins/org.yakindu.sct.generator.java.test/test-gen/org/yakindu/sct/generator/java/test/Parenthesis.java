@@ -19,15 +19,15 @@ public class Parenthesis {
 	private ParenthesisStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/Parenthesis.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/Parenthesis.sgen");
-	
-	
 	
 	@Before
 	public void parenthesis_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/Parenthesis.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/Parenthesis.sgen"
+		);
 		
 		statemachine = new ParenthesisStatemachine();
 		timer = new VirtualTimer(200);

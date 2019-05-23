@@ -19,15 +19,15 @@ public class CastExpressions {
 	private CastExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/CastExpressions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/CastExpressions.sgen");
-	
-	
 	
 	@Before
 	public void castExpressions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/CastExpressions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/CastExpressions.sgen"
+		);
 		
 		statemachine = new CastExpressionsStatemachine();
 		timer = new VirtualTimer(200);

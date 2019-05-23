@@ -28,15 +28,15 @@ public class OperationsTest {
 	private OperationsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/Operations.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/Operations.sgen");
-	
-	
 	
 	@Before
 	public void operationsTest_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/Operations.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/Operations.sgen"
+		);
 		
 		statemachine = new OperationsStatemachine();
 		timer = new VirtualTimer(200);

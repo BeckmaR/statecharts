@@ -19,15 +19,15 @@ public class ShallowHistoryWithDeepEntry {
 	private ShallowHistoryWithDeepEntryStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/ShallowHistoryWithDeepEntry.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ShallowHistoryWithDeepEntry.sgen");
-	
-	
 	
 	@Before
 	public void shallowHistoryWithDeepEntry_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/ShallowHistoryWithDeepEntry.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ShallowHistoryWithDeepEntry.sgen"
+		);
 		
 		statemachine = new ShallowHistoryWithDeepEntryStatemachine();
 		timer = new VirtualTimer(200);

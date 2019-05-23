@@ -19,15 +19,15 @@ public class FloatModulo {
 	private FloatModuloStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/FloatModulo.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/FloatModulo.sgen");
-	
-	
 	
 	@Before
 	public void floatModulo_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/FloatModulo.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/FloatModulo.sgen"
+		);
 		
 		statemachine = new FloatModuloStatemachine();
 		timer = new VirtualTimer(200);

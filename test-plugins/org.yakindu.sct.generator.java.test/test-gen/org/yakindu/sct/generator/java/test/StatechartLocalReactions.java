@@ -19,15 +19,15 @@ public class StatechartLocalReactions {
 	private StatechartLocalReactionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/StatechartLocalReactions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/StatechartLocalReactions.sgen");
-	
-	
 	
 	@Before
 	public void statechartLocalReactions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/StatechartLocalReactions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/StatechartLocalReactions.sgen"
+		);
 		
 		statemachine = new StatechartLocalReactionsStatemachine();
 		timer = new VirtualTimer(200);

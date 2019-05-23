@@ -19,15 +19,15 @@ public class EnterState {
 	private EnterStateStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/EnterState.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/EnterState.sgen");
-	
-	
 	
 	@Before
 	public void enterState_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/EnterState.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/EnterState.sgen"
+		);
 		
 		statemachine = new EnterStateStatemachine();
 		timer = new VirtualTimer(200);

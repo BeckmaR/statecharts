@@ -19,15 +19,15 @@ public class StatechartEntryExitActions {
 	private StatechartEntryAndExitActionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/statechartactions/StatechartEntryAndExitActions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/StatechartEntryAndExitActions.sgen");
-	
-	
 	
 	@Before
 	public void statechartEntryExitActions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/statechartactions/StatechartEntryAndExitActions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/StatechartEntryAndExitActions.sgen"
+		);
 		
 		statemachine = new StatechartEntryAndExitActionsStatemachine();
 		timer = new VirtualTimer(200);

@@ -19,15 +19,15 @@ public class EntryChoice {
 	private EntryChoiceStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/EntryChoice.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/EntryChoice.sgen");
-	
-	
 	
 	@Before
 	public void entryChoice_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/EntryChoice.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/EntryChoice.sgen"
+		);
 		
 		statemachine = new EntryChoiceStatemachine();
 		timer = new VirtualTimer(200);

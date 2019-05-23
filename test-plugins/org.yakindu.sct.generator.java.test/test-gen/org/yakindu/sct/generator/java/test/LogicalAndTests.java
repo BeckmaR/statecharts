@@ -19,15 +19,15 @@ public class LogicalAndTests {
 	private LogicalAndStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/LogicalAnd.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/LogicalAnd.sgen");
-	
-	
 	
 	@Before
 	public void logicalAndTests_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/LogicalAnd.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/LogicalAnd.sgen"
+		);
 		
 		statemachine = new LogicalAndStatemachine();
 		timer = new VirtualTimer(200);

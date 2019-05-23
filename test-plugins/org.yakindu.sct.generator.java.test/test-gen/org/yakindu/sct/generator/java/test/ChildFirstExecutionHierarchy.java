@@ -19,15 +19,15 @@ public class ChildFirstExecutionHierarchy {
 	private ChildFirstExecutionHierarchyStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/executionorder/ChildFirstExecutionHierarchy.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstExecutionHierarchy.sgen");
-	
-	
 	
 	@Before
 	public void childFirstExecutionHierarchy_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/executionorder/ChildFirstExecutionHierarchy.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstExecutionHierarchy.sgen"
+		);
 		
 		statemachine = new ChildFirstExecutionHierarchyStatemachine();
 		timer = new VirtualTimer(200);

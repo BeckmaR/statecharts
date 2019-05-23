@@ -19,15 +19,15 @@ public class TriggerGuardExpressions {
 	private TriggerGuardExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/TriggerGuardExpressions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/TriggerGuardExpressions.sgen");
-	
-	
 	
 	@Before
 	public void triggerGuardExpressions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/TriggerGuardExpressions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/TriggerGuardExpressions.sgen"
+		);
 		
 		statemachine = new TriggerGuardExpressionsStatemachine();
 		timer = new VirtualTimer(200);

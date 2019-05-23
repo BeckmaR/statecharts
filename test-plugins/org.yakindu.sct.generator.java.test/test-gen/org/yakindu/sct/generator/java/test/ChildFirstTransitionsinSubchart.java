@@ -26,15 +26,15 @@ public class ChildFirstTransitionsinSubchart {
 	private ChildFirstTransitionsInSubchartStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/executionorder/ChildFirstTransitionsInSubchart.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstTransitionsInSubchart.sgen");
-	
-	
 	
 	@Before
 	public void childFirstTransitionsinSubchart_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/executionorder/ChildFirstTransitionsInSubchart.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstTransitionsInSubchart.sgen"
+		);
 		
 		statemachine = new ChildFirstTransitionsInSubchartStatemachine();
 		timer = new VirtualTimer(200);

@@ -19,15 +19,15 @@ public class PerformanceTests {
 	private PerformanceTestStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/PerformanceTest.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/PerformanceTest.sgen");
-	
-	
 	
 	@Before
 	public void performanceTests_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/PerformanceTest.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/PerformanceTest.sgen"
+		);
 		
 		statemachine = new PerformanceTestStatemachine();
 		timer = new VirtualTimer(200);

@@ -19,15 +19,15 @@ public class PriorityValues {
 	private PriorityValuesStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/PriorityValues.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/PriorityValues.sgen");
-	
-	
 	
 	@Before
 	public void priorityValues_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/PriorityValues.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/PriorityValues.sgen"
+		);
 		
 		statemachine = new PriorityValuesStatemachine();
 		timer = new VirtualTimer(200);

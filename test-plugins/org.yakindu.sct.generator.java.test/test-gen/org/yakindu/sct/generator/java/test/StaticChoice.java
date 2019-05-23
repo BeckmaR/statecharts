@@ -19,15 +19,15 @@ public class StaticChoice {
 	private StaticChoiceStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/StaticChoice.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/StaticChoice.sgen");
-	
-	
 	
 	@Before
 	public void staticChoice_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/StaticChoice.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/StaticChoice.sgen"
+		);
 		
 		statemachine = new StaticChoiceStatemachine();
 		timer = new VirtualTimer(200);

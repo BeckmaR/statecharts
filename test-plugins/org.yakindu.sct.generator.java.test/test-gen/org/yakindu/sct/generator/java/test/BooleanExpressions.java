@@ -19,15 +19,15 @@ public class BooleanExpressions {
 	private BooleanExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/BooleanExpressions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/BooleanExpressions.sgen");
-	
-	
 	
 	@Before
 	public void booleanExpressions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/BooleanExpressions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/BooleanExpressions.sgen"
+		);
 		
 		statemachine = new BooleanExpressionsStatemachine();
 		timer = new VirtualTimer(200);

@@ -19,15 +19,15 @@ public class GuardedExit {
 	private GuardedExitStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/GuardedExit.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/GuardedExit.sgen");
-	
-	
 	
 	@Before
 	public void guardedExit_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/GuardedExit.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/GuardedExit.sgen"
+		);
 		
 		statemachine = new GuardedExitStatemachine();
 		timer = new VirtualTimer(200);

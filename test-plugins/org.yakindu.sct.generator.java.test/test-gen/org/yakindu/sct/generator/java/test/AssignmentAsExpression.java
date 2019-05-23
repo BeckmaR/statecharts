@@ -19,15 +19,15 @@ public class AssignmentAsExpression {
 	private AssignmentAsExpressionStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/AssignmentAsExpression.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/AssignmentAsExpression.sgen");
-	
-	
 	
 	@Before
 	public void assignmentAsExpression_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/AssignmentAsExpression.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/AssignmentAsExpression.sgen"
+		);
 		
 		statemachine = new AssignmentAsExpressionStatemachine();
 		timer = new VirtualTimer(200);

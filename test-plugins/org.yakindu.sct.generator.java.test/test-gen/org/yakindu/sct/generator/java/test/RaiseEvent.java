@@ -19,15 +19,15 @@ public class RaiseEvent {
 	private RaiseEventStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/RaiseEvent.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/RaiseEvent.sgen");
-	
-	
 	
 	@Before
 	public void raiseEvent_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/RaiseEvent.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/RaiseEvent.sgen"
+		);
 		
 		statemachine = new RaiseEventStatemachine();
 		timer = new VirtualTimer(200);

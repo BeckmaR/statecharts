@@ -16,15 +16,15 @@ public class EventDrivenOutEvents {
 	
 	private EventDrivenOutEventsStatemachine statemachine;	
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/EventDrivenOutEvents.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/EventDrivenOutEvents.sgen");
-	
-	
 	
 	@Before
 	public void eventDrivenOutEvents_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/EventDrivenOutEvents.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/EventDrivenOutEvents.sgen"
+		);
 		
 		statemachine = new EventDrivenOutEventsStatemachine();
 		

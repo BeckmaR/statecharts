@@ -19,15 +19,15 @@ public class BitExpressions {
 	private BitExpressionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/BitExpressions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/BitExpressions.sgen");
-	
-	
 	
 	@Before
 	public void bitExpressions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/BitExpressions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/BitExpressions.sgen"
+		);
 		
 		statemachine = new BitExpressionsStatemachine();
 		timer = new VirtualTimer(200);

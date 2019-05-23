@@ -19,15 +19,15 @@ public class InternalEventLifeCycle {
 	private InternalEventLifeCycleStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/InternalEventLifeCycle.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/InternalEventLifeCycle.sgen");
-	
-	
 	
 	@Before
 	public void internalEventLifeCycle_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/InternalEventLifeCycle.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/InternalEventLifeCycle.sgen"
+		);
 		
 		statemachine = new InternalEventLifeCycleStatemachine();
 		timer = new VirtualTimer(200);

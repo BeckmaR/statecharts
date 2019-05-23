@@ -19,15 +19,15 @@ public class GuardedEntry {
 	private GuardedEntryStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/GuardedEntry.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/GuardedEntry.sgen");
-	
-	
 	
 	@Before
 	public void guardedEntry_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/GuardedEntry.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/GuardedEntry.sgen"
+		);
 		
 		statemachine = new GuardedEntryStatemachine();
 		timer = new VirtualTimer(200);

@@ -19,15 +19,15 @@ public class ChildFirstLocalReactions {
 	private ChildFirstLocalReactionsStatemachine statemachine;	
 	private VirtualTimer timer;
 	
-	private TestModelGenerator helper = new TestModelGenerator(
-			"testmodels/SCTUnit/executionorder/ChildFirstLocalReactions.sct", 
-			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstLocalReactions.sgen");
-	
-	
 	
 	@Before
 	public void childFirstLocalReactions_setUp() {
-		helper.generate();
+		new TestModelGenerator().generate(
+			"org.yakindu.sct.test.models",
+			"testmodels/SCTUnit/executionorder/ChildFirstLocalReactions.sct", 
+			"org.yakindu.sct.generator.java.test",
+			"test-gen/org/yakindu/sct/generator/java/test/ChildFirstLocalReactions.sgen"
+		);
 		
 		statemachine = new ChildFirstLocalReactionsStatemachine();
 		timer = new VirtualTimer(200);
