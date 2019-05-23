@@ -26,54 +26,44 @@ import org.yakindu.sct.types.generator.statechart.java.GenmodelEntries;
 
 public class TestModelGenerator {
 
-	private static final String TEST_MODEL_BUNDLE = "org.yakindu.sct.test.models";
-	private static final String GEN_JAVA_TEST_BUNDLE = "org.yakindu.sct.generator.java.test";
-
-	private String statechartFile;
-	private String genModelFile;
-
-	public TestModelGenerator(String statechartFile, String genModelFile) {
-		this.statechartFile = statechartFile;
-		this.genModelFile = genModelFile;
-	}
-
-	public void generate() {
-		initWorkspace();
+	public void generate(String statechartBundle, String statechartFile, String genModelBundle, String genModelFile) {
+		initWorkspace(statechartBundle, genModelBundle);
 		
-		Statechart sct = loadModel(TEST_MODEL_BUNDLE, statechartFile);
+		Statechart sct = loadModel(statechartBundle, statechartFile);
 		Assert.assertNotNull(sct);
 		
-		GeneratorModel gen = loadModel(GEN_JAVA_TEST_BUNDLE, genModelFile);
+		GeneratorModel gen = loadModel(genModelBundle, genModelFile);
 		Assert.assertNotNull(gen);
 		
 		gen.getEntries().get(0).setElementRef(sct);
 		
-//		cleanUpTarget(gen);
+//		cleanUpTarget(genModelBundle, gen);
 		
 		execute(gen);
 		
 		performFullBuild();
 	}
 
-	protected void initWorkspace() {
+	protected void initWorkspace(String... bundlesToImport) {
 		try {
 			enableAutoBuild(false);
-			importBundle(TEST_MODEL_BUNDLE);
-			importBundle(GEN_JAVA_TEST_BUNDLE);
+			for (String bundle : bundlesToImport) {
+				importBundle(bundle);
+			}
 		} catch (CoreException | IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected void cleanUpTarget(GeneratorModel gen) {
+	protected void cleanUpTarget(String genModelBundle, GeneratorModel gen) {
 		GenmodelEntries genModelHelper = new GenmodelEntries();
 		GeneratorEntry entry = gen.getEntries().get(0);
 		
 		// TODO: Naming not injected here, so this throws an NPE
 		String targetPath = genModelHelper.getImplementationPackagePath(entry);
 		
-		IFile targetFolder = getFile(GEN_JAVA_TEST_BUNDLE, targetPath);
+		IFile targetFolder = getFile(genModelBundle, targetPath);
 		if (targetFolder.exists()) {
 			try {
 				targetFolder.delete(true, null);
