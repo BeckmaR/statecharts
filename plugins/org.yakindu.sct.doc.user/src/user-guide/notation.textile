@@ -1,0 +1,139 @@
+p.
+
+h1(#sc_notation). Notation of Statecharts
+
+Statecharts are a graphical modeling language. Therefore, like all languages, statecharts are composed of certain objects and symbols. This chapter describes the different notational symbols that are available and valid compositions thereof. 
+
+The interaction of statechart objects and their semantical meanings are described in "Semantics of Statecharts":../user-guide/semantics.html#sc_semantics.
+
+h2(#sc_notation_overview). Overview
+
+Statecharts are composed of two sets of notational objects:
+* "Graphical elements":#sc_notation_graphical
+* "Nongraphical elements":#sc_notation_nongraphical
+
+While graphical elements describe the structure of the statechart, certain nongraphical elements like names, data and behavior descriptions are needed as well. These elements are organized in a hierarchical manner. Like in a regular language, where certain words can follow each other and others can not, certain elements of the statechart language can _contain_ certain other ones.
+
+h3(#sc_notation_graphical). Graphical Elements
+
+This section describes the graphical elements of the statechart notation. 
+
+* "Regions":#sc_notation_regions
+* "States":#sc_notation_states
+** "Regular States"
+*** Composite States
+*** Orthogonal States
+*** Final States
+** Nonregular states
+*** Entry States
+*** History States
+*** Exit States
+*** Choices
+*** Synchronizations
+* "Transitions":#sc_notation_transitions
+
+h4(#sc_notation_regions). Regions
+
+The basic building blocks of YAKINDU Statecharts are regions. Regions contain "States":#sc_notation_states and "Transitions":#sc_notation_transitions. Regions can be contained in the statechart itself, and all statecharts are composed of one or more regions. Alternatively, regions can be contained in states to model deeper hierarchies. States can contain zero or more regions. When two or more regions are contained in the same element (a state or the statechart itself), these regions are said to be _parallel_ or _orthogonal_. Parallel regions are ordered by a _Region Priority_. The image shows a statechart composed of four regions on the root level - these regions are parallel to each other.
+!images/docu_parallelRegions.jpg(Parallel regions)!
+
+p=. Parallel regions
+
+h4(#sc_notation_states). States
+
+*States* are the central elements of a state machine. There are several kinds of states with different characteristics and constraints. All states have to be contained in a "region":#sc_notation_regions and must have a name that is unique within this region (exception: Synchronizations and Choices).
+
+These are the state types available in YAKINDU Statechart Tools:
+* "Regular States":#sc_notation_regular_states
+** "Composite States":#sc_notation_composite_orthogonal_state
+** "Orthogonal States":#sc_notation_composite_orthogonal_state
+** Final States
+* Nonregular states
+** Entry States
+** History States
+** Exit States
+** Choices
+** Synchronizations
+
+States are connected by "Transitions":#sc_notation_transitions. Transitions are directed, therefore states have _incoming_ and _outgoing_ transitions. All states must have at least one incoming transition and zero or more outgoing transitions (with the notable exception of the _Entry State_ and the _History State_, which have exactly one outgoing and zero incoming transitions).
+
+h4(#sc_notation_regular_states). Regular States
+
+Regular States are the most "basic" and versatile kind of state in statecharts. They are displayed as rounded rectangles with two textboxes, as shown in the following image:
+
+p(#sc_notation_regular_states_img). 
+!images/notation/basic_state.png(Regular State)!
+
+p=. A Regular State with a name and behavior.
+
+The upper text denotes the _name_ of the state, which is obligatory and must be unique within the "Region":#sc_notation_regions the state is contained in. The lower text is optional and is the behavior specification of the state. The behavior specification consists of a sequence of "_local reactions_":#sclang_reactions. The behavior specifies which "actions":#sclang_reactions are executed on which conditions. Such actions can be triggered by entering the state, leaving the state, occurrence of events, conditions becoming true, or time passing. 
+
+Furthermore, Regular States (and only those) can contain Regions, see the next section "Composite and Orthogonal States":#sc_notation_composite_orthogonal_state.
+
+==<div class="example">==
+
+The statechart below has three states, *Countdown*, *Rocket launched* and *Countdown canceled*. The state *Countdown* has three local reactions:
+
+p(#sclang_fig_state_example). 
+!images/docu_state_010_example_01.png(State example)!
+
+p=. State example: A simple state machine to launch a rocket.
+
+==</div>==
+
+h5(#sc_notation_composite_orthogonal_state). Composite and Orthogonal States
+
+"Regular States":#sc_notation_regular_states can contain other "Regions":#sc_notation_regions. A State that contains one subregion is called a _Composite State_. A State with two or more subregions is called an _Orthogonal State_.
+
+p(#sc_notation_composite_states_img). 
+!images/notation/composite_state.png(Composite State)!
+
+p=. A Composite State containing one subregion.
+
+p(#sc_notation_orthogonal_states_img). 
+!images/notation/orthogonal_state.png(Orthogonal State)!
+
+p=. An Orthogonal State containing two subregions.
+
+
+h4(#sc_notation_other_states). Other states
+
+As mentioned before, there are quite a few other kinds of state available. While they do have certain notational differences and varying notational constraints, most of their differences are a of semantical nature. Therefore, this chapter shall only give an overview over the notational constraints of all state kinds:
+
+|^.
+|/2_. State Kind |/2_. Image |\2_. # Transitions |/2_. # in Region |/2_. Notes|
+|_. → _in_ |_. _out_ → |
+| _Regular State_ | !images/notation/small_state.png(Regular State)! | 1 : n | 0 : n | 0 : n | Can contain regions |
+| _Entry State_ | !images/notation/small_entry.png(Entry State)! | 0 | 1 |/3 1 : n |/3 Interchangeable with each other |
+| _History State_ | !images/notation/small_history.png(History State)! | 0 | 1 |
+| _Deep History State_ | !images/notation/small_deep_history.png(Deep History State)! | 0 | 1 |
+| _Final State_ | !images/notation/small_final_state.png(Final State)! | 1 : n | 0 | 0 : 1 | |
+| _Exit State_ | !images/notation/small_exit_state.png(Exit State)! | 1 : n | 0 | 0 : n |
+| _Regular State_ | !images/notation/small_state.png(Composite State)! | 1 : n | 0 : n | 0 : n |
+| _Regular State_ | !images/notation/small_state.png(Composite State)! | 1 : n | 0 : n | 0 : n |
+
+h4(#sc_notation_transitions). Transitions
+
+Transitions are directed connections between "States":#sc_notation_states. They are displayed as arrows. Transitions always have a _source state_ and a _target state_, signified by the direction of the arrow. These can be the same state or two different states. The connected states can be contained in the same or in different "regions":#sc_notation_regions, as long as these regions are not _orthogonal_. 
+
+The transitions that have a certain state as _target state_ are those state's _incoming_ transitions, while those that share a _source state_ are those state's _outgoing_ transitions. When more than outgoing transition is present, the transitions are ordered by their transition priority.
+
+The transition's behavior is specified by one "local reaction":#sclang_reactions. The transition's reaction is attached to the transition's arrow as a text. Its syntax can be found in the section on "reactions":#sclang_reactions.
+
+*Please note:* Transitions without a reaction are possible, but useless. They will never be taken.
+
+==<div class="example">==
+
+Here's an example:
+
+p(#sclang_fig_transition_example). 
+!images/docu_transition_030_example_01.png(Transition example)!
+
+p=. Transition example: A simple state machine to launch a rocket.
+
+The initial transition's _effect_ sets the counting variable _t_ to 10. As long as that variable's value is greater than 0, every second it gets counted down by 1. The operation _speak_ – executed as one of a transition's _actions_ – cares for audible information on how many seconds to go until the rocket is launched. If _t_ has been counted down to 0 – checked by a transition's _guard condition_ –, the rocket is launched. The countdown can be aborted anytime before launch by a _cancel_ event which _triggers_ the appropriate transition to fire. (See figure "&quot;State example&quot;":#sclang_fig_state_example for a different state machine which solves the same task, but puts more emphasis on states.)
+
+==</div>==
+
+h3(#sc_notation_nongraphical). Nongraphical Elements
+

@@ -197,6 +197,8 @@
                 <include name="tutorials/tutorials.textile"/>
                 <include name="user-guide/overview.textile"/>
                 <include name="user-guide/installation.textile"/>
+                <include name="user-guide/notation.textile"/>
+                <include name="user-guide/semantics.textile"/>
                 <include name="user-guide/editing_statecharts.textile"/>
                 <include name="user-guide/simulating_statecharts.textile"/>
                 <include name="user-guide/c-domain.textile"/>
@@ -216,11 +218,11 @@
             </fileset>
 
             <!-- Check whether we have all the expected textile source files – no more, no less: -->
-            <fail message="Number of textile source file(s) doesn't match.">
+            <!--<fail message="Number of textile source file(s) doesn't match.">
                 <condition>
                     <resourcecount refid="fileset.eclipsehelp" when="ne" count="17"/>
                 </condition>
-            </fail>
+            </fail>-->
 
             <!-- Convert textile source files to HTML: -->
             <wikitext-to-eclipse-help markupLanguage="Textile" multipleOutputFiles="false"
