@@ -20,7 +20,7 @@ This section describes the graphical elements of the statechart notation.
 
 * "Regions":#sc_notation_regions
 * "States":#sc_notation_states
-** "Regular States"
+** "Regular States":#sc_notation_regular_states
 *** Composite States
 *** Orthogonal States
 *** Final States
@@ -36,26 +36,16 @@ h4(#sc_notation_regions). Regions
 
 The basic building blocks of YAKINDU Statecharts are regions. Regions contain "States":#sc_notation_states and "Transitions":#sc_notation_transitions. Regions can be contained in the statechart itself, and all statecharts are composed of one or more regions. Alternatively, regions can be contained in states to model deeper hierarchies. States can contain zero or more regions. Regions in States are called Subregions, whereas those on the root level are called Top-Level Regions.
 
-When two or more regions are contained in the same element (a State or the statechart itself), these regions are said to be _parallel_ or _orthogonal_. Parallel regions are ordered by a _Region Priority_. The image shows a statechart composed of four regions on the root level - these regions are parallel to each other.
-!images/docu_parallelRegions.jpg(Parallel regions)!
+When two or more regions are contained in the same element (a State or the statechart itself), these regions are said to be _parallel_ or _orthogonal_. Parallel regions are ordered by a _Region Priority_. In the image above, the Regions _r1_ and _r2_ are parallel, while _r2_1_ and _r2_2_ are *not* - they are not contained in the same element.
 
-p=. Parallel regions
+p(#sc_notation_fig_overview_regions). 
+!images/notation/overview_region.png(Overview over regions)!
+
+p=. Overview over Region concepts
 
 h4(#sc_notation_states). States
 
 *States* are the central elements of a state machine. There are several kinds of states with different characteristics and constraints. All states have to be contained in a "region":#sc_notation_regions and must have a name that is unique within this region (exception: Synchronizations and Choices).
-
-These are the state types available in YAKINDU Statechart Tools:
-* "Regular States":#sc_notation_regular_states
-** "Composite States":#sc_notation_composite_orthogonal_state
-** "Orthogonal States":#sc_notation_composite_orthogonal_state
-** Final States
-* Nonregular states
-** Entry States
-** History States
-** Exit States
-** Choices
-** Synchronizations
 
 States are connected by "Transitions":#sc_notation_transitions. Transitions are directed, therefore states have _incoming_ and _outgoing_ transitions. All states must have at least one incoming transition and zero or more outgoing transitions (with the notable exception of the _Entry State_ and the _History State_, which have exactly one outgoing and zero incoming transitions).
 
@@ -87,22 +77,16 @@ h5(#sc_notation_composite_orthogonal_state). Composite and Orthogonal States
 
 "Regular States":#sc_notation_regular_states can contain other "Regions":#sc_notation_regions. A State that contains one subregion is called a _Composite State_. A State with two or more subregions is called an _Orthogonal State_.
 
-p(#sc_notation_composite_states_img). 
-!images/notation/composite_state.png(Composite State)!
+p(#sc_notation_composite_orthogonal_states_img). 
+!images/notation/overview_composite_states.png(Composite and Orthogonal State)!
 
-p=. A Composite State containing one subregion.
-
-p(#sc_notation_orthogonal_states_img). 
-!images/notation/orthogonal_state.png(Orthogonal State)!
-
-p=. An Orthogonal State containing two subregions.
+p=. A Composite State containing another Orthogonal State.
 
 
-h4(#sc_notation_other_states). Other states
+h4(#sc_notation_other_states). Other state types
 
 As mentioned before, there are quite a few other kinds of state available. While they do have certain notational differences and varying notational constraints, most of their differences are a of semantical nature. Therefore, this chapter shall only give an overview over the notational constraints of all state kinds:
 
-|^.
 |/2_. State Kind |/2_. Image |\2_. # Transitions |/2_. # in Region |/2_. Notes|
 |_. → _in_ |_. _out_ → |
 | _Regular State_ | !images/notation/small_state.png(Regular State)! | 1 : n | 0 : n | 0 : n | Basic building block of statecharts, can contain regions. |
@@ -116,26 +100,20 @@ As mentioned before, there are quite a few other kinds of state available. While
 
 h4(#sc_notation_transitions). Transitions
 
-Transitions are directed connections between "States":#sc_notation_states. They are displayed as arrows. Transitions always have a _source state_ and a _target state_, signified by the direction of the arrow. These can be the same state or two different states. The connected states can be contained in the same or in different "regions":#sc_notation_regions, as long as these regions are not _orthogonal_. 
+Transitions are directed connections between "States":#sc_notation_states. They are displayed as arrows. Transitions always have a _source state_ and a _target state_, signified by the direction of the arrow. These can be the same state or two different states. The connected states can be contained in the same or in different "regions":#sc_notation_regions, as long as these regions are not _orthogonal_. Especially, Transitions are allowed to go up and down in the hierarchy of subregions.
 
-The transitions that have a certain state as _target state_ are those state's _incoming_ transitions, while those that share a _source state_ are those state's _outgoing_ transitions. When more than outgoing transition is present, the transitions are ordered by their transition priority.
+The transitions that have a certain state as _target state_ are those state's _incoming_ transitions, while those that share a _source state_ are those state's _outgoing_ transitions. When more than one outgoing transition is present, the transitions are ordered by their transition priority.
 
-The transition's behavior is specified by one "local reaction":#sclang_reactions. The transition's reaction is attached to the transition's arrow as a text. Its syntax can be found in the section on "reactions":#sclang_reactions.
+Transitions have a text box that contains a description of the transition's behavior. Similar to States, the behavior is specified by a _"local reaction":#sclang_reactions_.
 
-*Please note:* Transitions without a reaction are possible, but useless. They will never be taken.
-
-==<div class="example">==
-
-Here's an example:
+All the concepts in one image:
 
 p(#sclang_fig_transition_example). 
-!images/docu_transition_030_example_01.png(Transition example)!
+!images/notation/overview_transition.png(Transitions)!
 
-p=. Transition example: A simple state machine to launch a rocket.
+p=. Transitions explained
 
-The initial transition's _effect_ sets the counting variable _t_ to 10. As long as that variable's value is greater than 0, every second it gets counted down by 1. The operation _speak_ – executed as one of a transition's _actions_ – cares for audible information on how many seconds to go until the rocket is launched. If _t_ has been counted down to 0 – checked by a transition's _guard condition_ –, the rocket is launched. The countdown can be aborted anytime before launch by a _cancel_ event which _triggers_ the appropriate transition to fire. (See figure "&quot;State example&quot;":#sclang_fig_state_example for a different state machine which solves the same task, but puts more emphasis on states.)
 
-==</div>==
 
 h3(#sc_notation_nongraphical). Nongraphical Elements
 
