@@ -45,7 +45,9 @@ A statechart interface declares the entities that are externally visible. These 
 | <code>var brightness : integer = 3</code> | Variable with initial value. |
 | <code>var readonly brightness : integer</code> | Variable marked as readonly to ensure it is not changed by the client code. |
 | <code>const PI : real = 3.14</code> | Constant, used to store some immutable data that is not changeable by the client code or the state machine. Constants must have an initial value. |
-| <code>operation average(a : real, b : real) : real</code> | Operation, connects a state machine to the outside world by making external behaviour accessible. Implementation needs to be provided by the client code. |
+| <code>operation doStuff()</code> | Operation, connects a state machine to the outside world by making external behaviour accessible. Implementation needs to be provided by the client code. |
+| <code>operation average(a : real, b : real) : real</code> | Operation with two parameters a and b of type real and return type real. |
+
 
 Typed elements must have one of the following types: _integer_, _real_, _boolean_ or _string_.
 
@@ -82,7 +84,7 @@ A state transition is taken when its trigger is raised and the guard condition i
 
 h4(#quick_ref_reaction_triggers). Triggers
 
-A transition reaction can specify the following *triggers*:
+A transition reaction can specify the following *triggers* (or none):
 
 |{width:160px}_. Trigger Syntax Examples |_. Meaning |
 | <code>ev1</code> | Event trigger, triggers when the event @ev1@ is raised. The used event needs to be declared in the definition section. |
