@@ -309,7 +309,9 @@ public class RubberBandRoutingSupport {
 	}
 
 	protected void forceInitialLocations(ConnData cd) {
-		List<RelativeBendpoint> constraint = createConstraint(cd.conn, cd.initialVisualPoints);
+		// List<RelativeBendpoint> constraint = createConstraint(cd.conn,
+		// cd.initialVisualPoints);
+		List<RelativeBendpoint> constraint = createConstraint(cd.conn, cd.getInitialPointsInLocal());
 		ConnectionRouter router = cd.conn.getConnectionRouter();
 		router.setConstraint(cd.conn, constraint);
 		router.route(cd.conn);

@@ -9,7 +9,9 @@
 package org.yakindu.sct.ui.editor.editparts;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
@@ -19,6 +21,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.geometry.Vector;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -45,6 +48,10 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 	private Rectangle originalBounds = null;
 	private RubberBandRoutingSupport router = new RubberBandRoutingSupport();
 	private RelativeBendpointUtil relbpUtil = new RelativeBendpointUtil();
+
+	private Map<IGraphicalEditPart, Boolean> innerStart = new IdentityHashMap<>();
+	private Map<IGraphicalEditPart, RubberBandRoutingSupport> innerRouter = new IdentityHashMap<>();
+	private Map<IGraphicalEditPart, Rectangle> innerBounds = new IdentityHashMap<>();
 
 	public Command createUpdateAllBendpointsCommand() {
 		CompoundCommand result = new CompoundCommand();
@@ -74,6 +81,14 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 		List<ConnectionEditPart> conns = new ArrayList<>();
 		conns.addAll(getHost().getSourceConnections());
 		conns.addAll(getHost().getTargetConnections());
+		return conns;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ConnectionEditPart> getAllConnectionParts(IGraphicalEditPart host) {
+		List<ConnectionEditPart> conns = new ArrayList<>();
+		conns.addAll(host.getSourceConnections());
+		conns.addAll(host.getTargetConnections());
 		return conns;
 	}
 
@@ -114,6 +129,7 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 		if (cd != null) {
 			return relbpUtil.convertToPointList(cd.initialVisualPoints);
 		}
+		// FIXME: should be initialized
 		return connection.getPoints();
 	}
 
@@ -174,6 +190,24 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 		}
 	}
 
+	private void showChangeBoundsFeedback(IGraphicalEditPart inner, ChangeBoundsRequest request) {
+		if (!innerStart.containsKey(inner) || innerStart.get(inner)) {
+			innerStart.put(inner, false);
+			innerRouter.put(inner, new RubberBandRoutingSupport());
+
+			IFigure figure = inner.getFigure();
+			Rectangle bounds = figure.getBounds().getCopy();
+			figure.translateToAbsolute(bounds);
+			bounds.translate(request.getMoveDelta().getNegated()).resize(request.getSizeDelta().getNegated());
+			innerBounds.put(inner, bounds);
+			System.out.println("inner bounds = " + bounds);
+			innerRouter.get(inner).initBoxDrag(bounds, getSourceConnections(), getTargetConnections());
+		}
+		Rectangle bounds = innerBounds.get(inner);
+		Rectangle transformed = request.getTransformedRectangle(bounds);
+		innerRouter.get(inner).updateBoxDrag(bounds);
+	}
+
 	private void showLineFeedback(ConnectionEditPart connectionEditPart) {
 		// XXX: copied from InitialPointsOfRequestDataManager
 		List<?> children = connectionEditPart.getChildren();
@@ -204,6 +238,59 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 			showChangeBoundsFeedback((ChangeBoundsRequest) request);
 			for (ConnectionEditPart cep : getAllConnectionParts()) {
 				showLineFeedback(cep);
+			}
+
+			if (cbr.getEditParts().get(0) == getHost()) {
+				List children = getHost().getChildren();
+				for (Object object : children) {
+					if (object instanceof EditPart) {
+						EditPart editPart = (EditPart) object;
+//						System.out.println("child " + editPart);
+						if (editPart instanceof StateFigureCompartmentEditPart) {
+							StateFigureCompartmentEditPart comp = (StateFigureCompartmentEditPart) editPart;
+							List compChildren = comp.getChildren();
+							for (Object o2 : compChildren) {
+								if (o2 instanceof EditPart) {
+									EditPart part = (EditPart) o2;
+//									System.out.println("comp child " + part);
+									if (part instanceof RegionEditPart) {
+										RegionEditPart region = (RegionEditPart) part;
+										List regChildren = region.getChildren();
+										for (Object o3 : regChildren) {
+											if (o3 instanceof EditPart) {
+												EditPart regChild = (EditPart) o3;
+//												System.out.println("reg child " + regChild);
+												if (regChild instanceof RegionCompartmentEditPart) {
+													RegionCompartmentEditPart regComp = (RegionCompartmentEditPart) regChild;
+													List regCompChildren = regComp.getChildren();
+													for (Object o4 : regCompChildren) {
+														if (o4 instanceof EditPart) {
+															EditPart inner = (EditPart) o4;
+															if (inner instanceof IGraphicalEditPart) {
+																System.out.println("inner " + inner);
+
+																showChangeBoundsFeedback((IGraphicalEditPart) inner,
+																		(ChangeBoundsRequest) request);
+
+																// TODO: routing support for inner states
+																List<ConnectionEditPart> innerConns = getAllConnectionParts(
+																		(IGraphicalEditPart) inner);
+																for (ConnectionEditPart ic : innerConns) {
+//																	showLineFeedback(ic);
+																}
+																// TODO: recurse
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

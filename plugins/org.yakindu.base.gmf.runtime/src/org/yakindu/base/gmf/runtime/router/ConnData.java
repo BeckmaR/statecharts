@@ -99,6 +99,16 @@ public class ConnData {
 		}
 	}
 
+	public List<PrecisionPoint> getInitialPointsInLocal() {
+		List<PrecisionPoint> local = new ArrayList<>();
+		for (int i = 0; i < initialVisualPointsAbs.size(); i++) {
+			PrecisionPoint p = new PrecisionPoint(initialVisualPointsAbs.get(i));
+			conn.translateToRelative(p);
+			local.add(p);
+		}
+		return local;
+	}
+
 	public List<PrecisionPoint> getInitialVisualPointsCopy() {
 		List<PrecisionPoint> copy = new ArrayList<>();
 		for (PrecisionPoint p : initialVisualPoints) {
