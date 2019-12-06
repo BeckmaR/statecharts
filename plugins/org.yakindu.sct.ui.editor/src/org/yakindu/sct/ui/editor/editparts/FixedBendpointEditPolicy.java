@@ -158,6 +158,31 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 		return result;
 	}
 
+	private List<Connection> getSourceConnections(List<IGraphicalEditPart> parts, IGraphicalEditPart part) {
+		List<Connection> result = new ArrayList<>();
+		@SuppressWarnings("unchecked")
+		List<IGraphicalEditPart> sourceConnections = part.getSourceConnections();
+		for (IGraphicalEditPart iGraphicalEditPart : sourceConnections) {
+			Connection connection = (Connection) iGraphicalEditPart.getFigure();
+			boolean isRelevant = true;
+			IFigure cOwner = connection.getTargetAnchor().getOwner();
+			for (IGraphicalEditPart p : parts) {
+				// XXX: need to check for parent, too, because of ellipse anchor figure wrapped
+				// around state figure
+				if ((cOwner == p.getFigure()) || (cOwner.getParent() == p.getFigure())) {
+					isRelevant = false;
+					break;
+				}
+			}
+			if (isRelevant) {
+				System.out.println("src relevant " + connection.getSourceAnchor().getOwner() + " to "
+						+ connection.getTargetAnchor().getOwner());
+				result.add(connection);
+			}
+		}
+		return result;
+	}
+
 	private List<Connection> getTargetConnections() {
 		return getTargetConnections(getHost());
 	}
@@ -169,6 +194,34 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 		for (IGraphicalEditPart iGraphicalEditPart : targetConnections) {
 			Connection connection = (Connection) iGraphicalEditPart.getFigure();
 			result.add(connection);
+		}
+		return result;
+	}
+
+	private List<Connection> getTargetConnections(List<IGraphicalEditPart> parts, IGraphicalEditPart part) {
+		List<Connection> result = new ArrayList<>();
+		@SuppressWarnings("unchecked")
+		List<IGraphicalEditPart> targetConnections = part.getTargetConnections();
+		for (IGraphicalEditPart iGraphicalEditPart : targetConnections) {
+			Connection connection = (Connection) iGraphicalEditPart.getFigure();
+			boolean isRelevant = true;
+			IFigure cOwner = connection.getSourceAnchor().getOwner();
+			for (IGraphicalEditPart p : parts) {
+				// XXX: need to check for parent, too, because of ellipse anchor figure wrapped
+				// around state figure
+				if ((cOwner == p.getFigure()) || (cOwner.getParent() == p.getFigure())) {
+					isRelevant = false;
+					break;
+				}
+			}
+			if (isRelevant) {
+				System.out.println("tgt relevant " + connection.getSourceAnchor().getOwner() + " to "
+						+ connection.getTargetAnchor().getOwner());
+				result.add(connection);
+			}
+		}
+		for (IGraphicalEditPart ep : parts) {
+			System.out.println("- " + ep + " => " + ep.getFigure());
 		}
 		return result;
 	}
@@ -208,7 +261,8 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 		}
 	}
 
-	private void showChangeBoundsFeedback(IGraphicalEditPart inner, ChangeBoundsRequest request) {
+	private void showChangeBoundsFeedback(List<IGraphicalEditPart> innerStates, IGraphicalEditPart inner,
+			ChangeBoundsRequest request) {
 		if (!innerStart.containsKey(inner) || innerStart.get(inner)) {
 			innerStart.put(inner, false);
 			innerRouter.put(inner, new RubberBandRoutingSupport());
@@ -219,7 +273,8 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 			bounds.translate(request.getMoveDelta().getNegated()).resize(request.getSizeDelta().getNegated());
 			innerBounds.put(inner, bounds);
 			System.out.println("inner bounds = " + bounds);
-			innerRouter.get(inner).initBoxDrag(bounds, getSourceConnections(inner), getTargetConnections(inner));
+			innerRouter.get(inner).initBoxDrag(bounds, getSourceConnections(innerStates, inner),
+					getTargetConnections(innerStates, inner));
 		}
 		Rectangle bounds = innerBounds.get(inner);
 		Rectangle transformed = request.getTransformedRectangle(bounds);
@@ -299,23 +354,25 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 												if (regChild instanceof RegionCompartmentEditPart) {
 													RegionCompartmentEditPart regComp = (RegionCompartmentEditPart) regChild;
 													List regCompChildren = regComp.getChildren();
+													List<IGraphicalEditPart> innerStates = new ArrayList<>();
 													for (Object o4 : regCompChildren) {
 														if (o4 instanceof EditPart) {
 															EditPart inner = (EditPart) o4;
 															if (inner instanceof IGraphicalEditPart) {
-																System.out.println("inner " + inner);
-
-																showChangeBoundsFeedback((IGraphicalEditPart) inner,
-																		(ChangeBoundsRequest) request);
-
-																// TODO: routing support for inner states
-																List<ConnectionEditPart> innerConns = getAllConnectionParts(
-																		(IGraphicalEditPart) inner);
-																for (ConnectionEditPart ic : innerConns) {
-																	showLineFeedback((IGraphicalEditPart) inner, ic);
-																}
+																innerStates.add((IGraphicalEditPart) inner);
 																// TODO: recurse
 															}
+														}
+													}
+													for (IGraphicalEditPart inner : innerStates) {
+														showChangeBoundsFeedback(innerStates, inner,
+																(ChangeBoundsRequest) request);
+
+														// TODO: routing support for inner states
+														List<ConnectionEditPart> innerConns = getAllConnectionParts(
+																inner);
+														for (ConnectionEditPart ic : innerConns) {
+															showLineFeedback(inner, ic);
 														}
 													}
 												}
