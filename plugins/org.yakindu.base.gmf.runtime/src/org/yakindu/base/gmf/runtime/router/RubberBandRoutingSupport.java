@@ -194,7 +194,7 @@ public class RubberBandRoutingSupport {
 
 	private List<PrecisionPoint> dragAnchoredSegments(ConnData cd, Rectangle sourceBox, Rectangle targetBox,
 			double localDx, double localDy, double localDw, double localDh) {
-		List<PrecisionPoint> pointsCopy = cd.getInitialVisualPointsCopy();
+		List<PrecisionPoint> pointsCopy = cd.getInitialPointsInLocal();
 		if (cd.isReflexive) {
 			double dx = localDx + localDw;
 			double dy = localDy + localDh;

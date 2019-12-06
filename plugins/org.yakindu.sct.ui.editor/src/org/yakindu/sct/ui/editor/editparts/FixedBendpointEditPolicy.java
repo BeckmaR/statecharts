@@ -67,6 +67,7 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 	protected void eraseChangeBoundsFeedback(ChangeBoundsRequest request) {
 		connectionStart = true;
 		router.commitBoxDrag();
+		innerStart.clear();
 	}
 
 	@Override
@@ -133,10 +134,23 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 		return connection.getPoints();
 	}
 
+	private PointList getInitialPoints(IGraphicalEditPart state, Connection connection) {
+		ConnData cd = innerRouter.get(state).getCD(connection);
+		if (cd != null) {
+			return relbpUtil.convertToPointList(cd.getInitialPointsInLocal());
+		}
+		// FIXME: should be initialized
+		return connection.getPoints();
+	}
+
 	private List<Connection> getSourceConnections() {
+		return getSourceConnections(getHost());
+	}
+
+	private List<Connection> getSourceConnections(IGraphicalEditPart part) {
 		List<Connection> result = new ArrayList<>();
 		@SuppressWarnings("unchecked")
-		List<IGraphicalEditPart> sourceConnections = getHost().getSourceConnections();
+		List<IGraphicalEditPart> sourceConnections = part.getSourceConnections();
 		for (IGraphicalEditPart iGraphicalEditPart : sourceConnections) {
 			Connection connection = (Connection) iGraphicalEditPart.getFigure();
 			result.add(connection);
@@ -145,9 +159,13 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 	}
 
 	private List<Connection> getTargetConnections() {
+		return getTargetConnections(getHost());
+	}
+
+	private List<Connection> getTargetConnections(IGraphicalEditPart part) {
 		List<Connection> result = new ArrayList<>();
 		@SuppressWarnings("unchecked")
-		List<IGraphicalEditPart> targetConnections = getHost().getTargetConnections();
+		List<IGraphicalEditPart> targetConnections = part.getTargetConnections();
 		for (IGraphicalEditPart iGraphicalEditPart : targetConnections) {
 			Connection connection = (Connection) iGraphicalEditPart.getFigure();
 			result.add(connection);
@@ -201,11 +219,11 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 			bounds.translate(request.getMoveDelta().getNegated()).resize(request.getSizeDelta().getNegated());
 			innerBounds.put(inner, bounds);
 			System.out.println("inner bounds = " + bounds);
-			innerRouter.get(inner).initBoxDrag(bounds, getSourceConnections(), getTargetConnections());
+			innerRouter.get(inner).initBoxDrag(bounds, getSourceConnections(inner), getTargetConnections(inner));
 		}
 		Rectangle bounds = innerBounds.get(inner);
 		Rectangle transformed = request.getTransformedRectangle(bounds);
-		innerRouter.get(inner).updateBoxDrag(bounds);
+		innerRouter.get(inner).updateBoxDrag(transformed);
 	}
 
 	private void showLineFeedback(ConnectionEditPart connectionEditPart) {
@@ -219,6 +237,24 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 				if (currentConstraint instanceof EdgeLabelLocator) {
 					EdgeLabelLocator edgeLabelLocator = (EdgeLabelLocator) currentConstraint;
 					edgeLabelLocator.setFeedbackData(getInitialPoints(connection),
+							new Vector(edgeLabelLocator.getOffset().x, edgeLabelLocator.getOffset().y),
+							SetLabelsOffsetOperation.isEdgeWithObliqueRoutingStyle(connectionEditPart));
+				}
+			}
+		}
+	}
+
+	private void showLineFeedback(IGraphicalEditPart state, ConnectionEditPart connectionEditPart) {
+		// XXX: copied from InitialPointsOfRequestDataManager
+		List<?> children = connectionEditPart.getChildren();
+		Connection connection = connectionEditPart.getConnectionFigure();
+		for (Object child : children) {
+			if (child instanceof ExternalXtextLabelEditPart) {
+				IFigure figure = ((ExternalXtextLabelEditPart) child).getFigure();
+				Object currentConstraint = connection.getLayoutManager().getConstraint(figure);
+				if (currentConstraint instanceof EdgeLabelLocator) {
+					EdgeLabelLocator edgeLabelLocator = (EdgeLabelLocator) currentConstraint;
+					edgeLabelLocator.setFeedbackData(getInitialPoints(state, connection),
 							new Vector(edgeLabelLocator.getOffset().x, edgeLabelLocator.getOffset().y),
 							SetLabelsOffsetOperation.isEdgeWithObliqueRoutingStyle(connectionEditPart));
 				}
@@ -276,7 +312,7 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 																List<ConnectionEditPart> innerConns = getAllConnectionParts(
 																		(IGraphicalEditPart) inner);
 																for (ConnectionEditPart ic : innerConns) {
-//																	showLineFeedback(ic);
+																	showLineFeedback((IGraphicalEditPart) inner, ic);
 																}
 																// TODO: recurse
 															}
