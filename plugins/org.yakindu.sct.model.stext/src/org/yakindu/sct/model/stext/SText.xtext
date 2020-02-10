@@ -101,8 +101,8 @@ Guard:
 	{Guard} expression=Expression;
 
 ReactionEffect returns sgraph::Effect:
-	{ReactionEffect} actions+=(Expression | EventRaisingExpression) (=> ';' actions+=(Expression |
-	EventRaisingExpression))*;
+	{ReactionEffect} actions+=(Expression | EventRaisingExpression | EventDeferExpression) (=> ';' actions+=(Expression |
+	EventRaisingExpression | EventDeferExpression))*;
 
 TransitionProperty returns sgraph::ReactionProperty:
 	EntryPointSpec | ExitPointSpec;
@@ -150,6 +150,9 @@ EventRaisingExpression returns types::Expression:
 
 EventValueReferenceExpression returns types::Expression:
 	{EventValueReferenceExpression} 'valueof' '(' value=FeatureCall ')';
+
+EventDeferExpression returns types::Expression:
+	{EventDeferExpression} 'defer' events+=Expression (',' events+=Expression)*;
 
 ActiveStateReferenceExpression returns types::Expression:
 	{ActiveStateReferenceExpression} 'active' '(' value=[sgraph::State|FQN] ')';

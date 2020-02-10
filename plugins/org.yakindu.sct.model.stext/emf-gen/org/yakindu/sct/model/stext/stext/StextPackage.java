@@ -1587,6 +1587,34 @@ public interface StextPackage extends EPackage {
 	int EVENT_VALUE_REFERENCE_EXPRESSION_FEATURE_COUNT = TypesPackage.EXPRESSION_FEATURE_COUNT + 1;
 
 	/**
+	 * The meta object id for the '{@link org.yakindu.sct.model.stext.stext.impl.EventDeferExpressionImpl <em>Event Defer Expression</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.yakindu.sct.model.stext.stext.impl.EventDeferExpressionImpl
+	 * @see org.yakindu.sct.model.stext.stext.impl.StextPackageImpl#getEventDeferExpression()
+	 * @generated
+	 */
+	int EVENT_DEFER_EXPRESSION = 34;
+
+	/**
+	 * The feature id for the '<em><b>Events</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EVENT_DEFER_EXPRESSION__EVENTS = TypesPackage.EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Event Defer Expression</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EVENT_DEFER_EXPRESSION_FEATURE_COUNT = TypesPackage.EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
 	 * The meta object id for the '{@link org.yakindu.sct.model.stext.stext.impl.ActiveStateReferenceExpressionImpl <em>Active State Reference Expression</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1594,7 +1622,7 @@ public interface StextPackage extends EPackage {
 	 * @see org.yakindu.sct.model.stext.stext.impl.StextPackageImpl#getActiveStateReferenceExpression()
 	 * @generated
 	 */
-	int ACTIVE_STATE_REFERENCE_EXPRESSION = 34;
+	int ACTIVE_STATE_REFERENCE_EXPRESSION = 35;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' reference.
@@ -1622,7 +1650,7 @@ public interface StextPackage extends EPackage {
 	 * @see org.yakindu.sct.model.stext.stext.impl.StextPackageImpl#getTimeEventType()
 	 * @generated
 	 */
-	int TIME_EVENT_TYPE = 35;
+	int TIME_EVENT_TYPE = 36;
 
 	/**
 	 * The meta object id for the '{@link org.yakindu.sct.model.stext.stext.TimeUnit <em>Time Unit</em>}' enum.
@@ -1632,7 +1660,7 @@ public interface StextPackage extends EPackage {
 	 * @see org.yakindu.sct.model.stext.stext.impl.StextPackageImpl#getTimeUnit()
 	 * @generated
 	 */
-	int TIME_UNIT = 36;
+	int TIME_UNIT = 37;
 
 
 	/**
@@ -2196,6 +2224,27 @@ public interface StextPackage extends EPackage {
 	EReference getEventValueReferenceExpression_Value();
 
 	/**
+	 * Returns the meta object for class '{@link org.yakindu.sct.model.stext.stext.EventDeferExpression <em>Event Defer Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Event Defer Expression</em>'.
+	 * @see org.yakindu.sct.model.stext.stext.EventDeferExpression
+	 * @generated
+	 */
+	EClass getEventDeferExpression();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.yakindu.sct.model.stext.stext.EventDeferExpression#getEvents <em>Events</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Events</em>'.
+	 * @see org.yakindu.sct.model.stext.stext.EventDeferExpression#getEvents()
+	 * @see #getEventDeferExpression()
+	 * @generated
+	 */
+	EReference getEventDeferExpression_Events();
+
+	/**
 	 * Returns the meta object for class '{@link org.yakindu.sct.model.stext.stext.ActiveStateReferenceExpression <em>Active State Reference Expression</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2757,6 +2806,24 @@ public interface StextPackage extends EPackage {
 		 * @generated
 		 */
 		EReference EVENT_VALUE_REFERENCE_EXPRESSION__VALUE = eINSTANCE.getEventValueReferenceExpression_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.yakindu.sct.model.stext.stext.impl.EventDeferExpressionImpl <em>Event Defer Expression</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.yakindu.sct.model.stext.stext.impl.EventDeferExpressionImpl
+		 * @see org.yakindu.sct.model.stext.stext.impl.StextPackageImpl#getEventDeferExpression()
+		 * @generated
+		 */
+		EClass EVENT_DEFER_EXPRESSION = eINSTANCE.getEventDeferExpression();
+
+		/**
+		 * The meta object literal for the '<em><b>Events</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference EVENT_DEFER_EXPRESSION__EVENTS = eINSTANCE.getEventDeferExpression_Events();
 
 		/**
 		 * The meta object literal for the '{@link org.yakindu.sct.model.stext.stext.impl.ActiveStateReferenceExpressionImpl <em>Active State Reference Expression</em>}' class.

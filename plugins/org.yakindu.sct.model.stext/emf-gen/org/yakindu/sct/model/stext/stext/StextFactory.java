@@ -328,6 +328,15 @@ public interface StextFactory extends EFactory {
 	EventValueReferenceExpression createEventValueReferenceExpression();
 
 	/**
+	 * Returns a new object of class '<em>Event Defer Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Event Defer Expression</em>'.
+	 * @generated
+	 */
+	EventDeferExpression createEventDeferExpression();
+
+	/**
 	 * Returns a new object of class '<em>Active State Reference Expression</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

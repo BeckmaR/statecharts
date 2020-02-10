@@ -89,6 +89,9 @@
     <genClasses ecoreClass="SText.ecore#//EventValueReferenceExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference SText.ecore#//EventValueReferenceExpression/value"/>
     </genClasses>
+    <genClasses ecoreClass="SText.ecore#//EventDeferExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference SText.ecore#//EventDeferExpression/events"/>
+    </genClasses>
     <genClasses ecoreClass="SText.ecore#//ActiveStateReferenceExpression">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SText.ecore#//ActiveStateReferenceExpression/value"/>
     </genClasses>
