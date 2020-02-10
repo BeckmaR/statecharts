@@ -207,6 +207,7 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 
 				// get next event if available
 				event = nextEvent
+				// TODO : remove processed events ...
 				currentEvent = event
 				
 			} while (event !== null)
@@ -358,10 +359,10 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 		if (useEventQueue) { 
 			if (ev.direction == Direction::LOCAL) {
 				internalEventQueue.add(new Event(ev, value))
-				runCycle
 				return
 			} else if (ev.direction == Direction::IN) {
 				inEventQueue.add(new Event(ev, value))
+				runCycle
 				return
 			}
 		} 
@@ -394,7 +395,7 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 			event = internalEventQueue.poll
 		}
 		if(! inEventQueue.empty) {
-			event = if (inEventNextIdx < internalEventQueue.size )
+			event = if (inEventNextIdx < inEventQueue.size )
 						inEventQueue.get(inEventNextIdx) 
 					else null
 		}
