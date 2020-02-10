@@ -67,6 +67,7 @@ import org.yakindu.sct.domain.extension.DomainRegistry;
 import org.yakindu.sct.domain.extension.IDomain;
 import org.yakindu.sct.model.sgraph.Statechart;
 import org.yakindu.sct.model.sruntime.ExecutionEvent;
+import org.yakindu.sct.model.sruntime.StatechartBehavior;
 import org.yakindu.sct.simulation.core.debugmodel.SCTDebugTarget;
 import org.yakindu.sct.simulation.core.engine.ISimulationEngine;
 import org.yakindu.sct.simulation.ui.view.actions.CollapseAllAction;
@@ -366,7 +367,9 @@ public class SimulationView extends AbstractDebugTargetView implements ITypeSyst
 		}
 
 		public void raiseEvent(ExecutionEvent event) {
-			event.setRaised(!event.isRaised());
+			StatechartBehavior behavior = new StatechartBehavior();
+			behavior.raise(event, event.getValue());
+//			event.setRaised(!event.isRaised()); // TODO: Fix toggle event
 			viewer.refresh();
 		}
 	}

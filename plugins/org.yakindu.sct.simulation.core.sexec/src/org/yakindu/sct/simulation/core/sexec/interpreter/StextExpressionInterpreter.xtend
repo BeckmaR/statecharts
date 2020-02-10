@@ -24,6 +24,8 @@ import org.yakindu.sct.model.stext.stext.EventRaisingExpression
 import org.yakindu.sct.model.stext.stext.EventValueReferenceExpression
 import org.yakindu.sct.simulation.core.util.ExecutionContextExtensions
 import org.yakindu.base.expressions.interpreter.SlotResolutionExceptionSupplier
+import org.yakindu.sct.model.stext.stext.EventDeferExpression
+import org.yakindu.sct.model.sruntime.IEventProcessor
 
 /**
  * 
@@ -36,7 +38,7 @@ class StextExpressionInterpreter extends DefaultExpressionInterpreter {
 	@Inject
 	extension IQualifiedNameProvider provider
 	@Inject(optional=true)
-	protected extension IEventRaiser eventRaiser
+	protected extension IEventProcessor eventProcessor
 	@Inject protected extension ExecutionContextExtensions
 
 	def dispatch Object execute(EventRaisingExpression eventRaising) {
@@ -44,10 +46,22 @@ class StextExpressionInterpreter extends DefaultExpressionInterpreter {
 			.orElseThrow(SlotResolutionExceptionSupplier.forContext(eventRaising.event))
 		if (event instanceof ExecutionEvent) {
 			val value = eventRaising.value?.execute
-			if (eventRaiser !== null) event.raise(value)
+			if (eventProcessor !== null) event.raise(value)
 		}
 		null
 	}
+
+	def dispatch Object execute(EventDeferExpression defer) {
+		for (event : defer.events) {
+			val slot = context.resolve(event)
+				.orElseThrow(SlotResolutionExceptionSupplier.forContext(event))
+			if (slot instanceof ExecutionEvent) {
+				if (eventProcessor !== null) slot.defer()
+			}			
+		}
+		null
+	}
+
 
 	def dispatch Object execute(EventValueReferenceExpression expression) {
 		for (event : context.raisedEvents) {

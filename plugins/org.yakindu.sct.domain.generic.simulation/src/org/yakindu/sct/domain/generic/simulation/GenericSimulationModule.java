@@ -22,6 +22,7 @@ import org.yakindu.base.types.typesystem.ITypeSystem;
 import org.yakindu.sct.model.sexec.transformation.IModelSequencer;
 import org.yakindu.sct.model.sexec.transformation.ModelSequencer;
 import org.yakindu.sct.model.sruntime.ExecutionContext;
+import org.yakindu.sct.model.sruntime.IEventProcessor;
 import org.yakindu.sct.model.sruntime.impl.ExecutionContextImpl;
 import org.yakindu.sct.model.stext.inferrer.STextTypeInferrer;
 import org.yakindu.sct.model.stext.naming.StextNameProvider;
@@ -30,7 +31,6 @@ import org.yakindu.sct.simulation.core.sexec.container.DefaultSimulationEngineFa
 import org.yakindu.sct.simulation.core.sexec.container.IExecutionContextInitializer;
 import org.yakindu.sct.simulation.core.sexec.container.ISimulationEngineFactory;
 import org.yakindu.sct.simulation.core.sexec.interpreter.DefaultExecutionFlowInterpreter;
-import org.yakindu.sct.simulation.core.sexec.interpreter.IEventRaiser;
 import org.yakindu.sct.simulation.core.sexec.interpreter.IExecutionFlowInterpreter;
 import org.yakindu.sct.simulation.core.sexec.interpreter.JavaOperationMockup;
 import org.yakindu.sct.simulation.core.sexec.interpreter.StextExpressionInterpreter;
@@ -84,7 +84,7 @@ public class GenericSimulationModule extends AbstractGenericModule {
 		return DefaultExecutionFlowInterpreter.class;
 	}
 
-	public Class<? extends IEventRaiser> bindIEventRaiser() {
+	public Class<? extends IEventProcessor> bindIEventRaiser() {
 		return DefaultExecutionFlowInterpreter.class;
 	}
 

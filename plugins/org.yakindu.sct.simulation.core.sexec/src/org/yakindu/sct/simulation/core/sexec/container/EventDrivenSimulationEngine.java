@@ -100,11 +100,11 @@ public class EventDrivenSimulationEngine extends AbstractExecutionFlowSimulation
 				ExecutionEvent event = (ExecutionEvent) notification.getNotifier();
 				if (notification.getNewBooleanValue() != notification.getOldBooleanValue()) {
 					if (notification.getNewBooleanValue() && event.getDirection() != Direction.OUT) {
-						if (!suspended)
-							interpreter.runCycle();
-						else {
-							cycleAfterResume = true;
-						}
+//						if (!suspended)
+//							interpreter.runCycle();
+//						else {
+//							cycleAfterResume = true;
+//						}
 					}
 				}
 			}

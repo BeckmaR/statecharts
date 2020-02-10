@@ -25,6 +25,7 @@ import org.yakindu.sct.model.sgraph.Statechart;
 import org.yakindu.sct.model.sruntime.ExecutionContext;
 import org.yakindu.sct.model.sruntime.ExecutionEvent;
 import org.yakindu.sct.model.sruntime.ExecutionVariable;
+import org.yakindu.sct.model.sruntime.IEventProcessor;
 import org.yakindu.sct.model.sruntime.SRuntimeFactory;
 import org.yakindu.sct.model.stext.lib.StatechartAnnotations;
 import org.yakindu.sct.simulation.core.engine.scheduling.ITimeTaskScheduler;
@@ -32,7 +33,6 @@ import org.yakindu.sct.simulation.core.engine.scheduling.ITimeTaskScheduler.Time
 import org.yakindu.sct.simulation.core.engine.scheduling.ITimeTaskScheduler.TimeTask.Priority;
 import org.yakindu.sct.simulation.core.sexec.container.EventDrivenSimulationEngine.EventDrivenCycleAdapter;
 import org.yakindu.sct.simulation.core.sexec.container.IExecutionContextInitializer;
-import org.yakindu.sct.simulation.core.sexec.interpreter.IEventRaiser;
 import org.yakindu.sct.simulation.core.sexec.interpreter.IExecutionFlowInterpreter;
 import org.yakindu.sct.simulation.core.util.ExecutionContextExtensions;
 import org.yakindu.sct.test.models.SCTUnitTestModels;
@@ -170,8 +170,8 @@ public abstract class AbstractExecutionFlowTest {
 			event.setValue(value);
 			event.setRaised(true);
 		} else {
-			if (interpreter instanceof IEventRaiser) {
-				((IEventRaiser) interpreter).raise(context().getEvent(eventName), value);
+			if (interpreter instanceof IEventProcessor) {
+				((IEventProcessor) interpreter).raise(context().getEvent(eventName), value);
 			} else {
 				context().getEvent(eventName).setValue(value);
 				context().getEvent(eventName).setRaised(true);

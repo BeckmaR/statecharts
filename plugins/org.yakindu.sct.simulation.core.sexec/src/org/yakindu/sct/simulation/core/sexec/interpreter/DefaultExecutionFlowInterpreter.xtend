@@ -16,7 +16,7 @@ import java.util.List
 import java.util.Map
 import java.util.Queue
 import org.eclipse.emf.ecore.util.EcoreUtil
-import org.eclipse.xtend.lib.annotations.Data
+import org.eclipse.xtend.lib.annotations.Accessors
 import org.yakindu.base.expressions.interpreter.IExpressionInterpreter
 import org.yakindu.base.types.Direction
 import org.yakindu.sct.model.sexec.Call
@@ -48,6 +48,8 @@ import org.yakindu.sct.simulation.core.engine.scheduling.ITimeTaskScheduler
 import org.yakindu.sct.simulation.core.engine.scheduling.ITimeTaskScheduler.TimeTask
 import org.yakindu.sct.simulation.core.sexec.container.EventDrivenSimulationEngine.EventDrivenCycleAdapter
 import org.yakindu.sct.simulation.core.util.ExecutionContextExtensions
+import org.yakindu.sct.model.sruntime.StatechartExecutionAdapter
+import org.yakindu.sct.model.sruntime.IEventProcessor
 
 /**
  * 
@@ -55,20 +57,30 @@ import org.yakindu.sct.simulation.core.util.ExecutionContextExtensions
  * @author axel terfloth - minimized changes on execution context
  * 
  */
-class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEventRaiser {
+class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEventProcessor {
 
-	@Data static class Event {
+	@Accessors static class Event {
 
 		public ExecutionEvent event;
 		public Object value;
+		public boolean isDeferred;
 
 		new(ExecutionEvent ev, Object value) {
 			this.event = ev
 			this.value = value
+			this.isDeferred = false
 		}
 	}
 
+	protected Event currentEvent = null;
+	
+	protected List<Event> inEventQueue = new LinkedList<Event>()
+	protected int inEventNextIdx = 0
+	protected boolean inEventDeferred = false
+	protected boolean isRunning = false
+	
 	protected Queue<Event> internalEventQueue = new LinkedList<Event>()
+	
 
 	@Inject
 	protected IExpressionInterpreter statementInterpreter
@@ -89,7 +101,7 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 	protected Map<Integer, ExecutionState> historyStateConfiguration
 	protected List<Step> executionStack
 	protected int activeStateIndex
-	protected boolean useInternalEventQueue
+	protected boolean useEventQueue
 
 	protected boolean useSuperStep
 	protected boolean stateVectorChanged
@@ -101,14 +113,16 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 		initialize(flow, context, false)
 	}
 
-	override initialize(ExecutionFlow flow, ExecutionContext context, boolean useInternalEventQueue) {
-		this.flow = flow
+	override initialize(ExecutionFlow flow, ExecutionContext context, boolean useEventQueue) {
+		this.flow = flow		
 		executionContext = context
+		executionContext.eAdapters.add(new StatechartExecutionAdapter(this))
+
 		executionStack = newLinkedList()
 		activeStateConfiguration = newArrayOfSize(flow.stateVector.size)
 		activeStateIndex = 0
 		historyStateConfiguration = newHashMap()
-		this.useInternalEventQueue = useInternalEventQueue
+		this.useEventQueue = useEventQueue
 		useSuperStep = (flow.sourceElement as Statechart).isSuperStep
 
 		if (!executionContext.snapshot) {
@@ -153,9 +167,15 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 	}
 
 	override runCycle() {
+		if ( isRunning ) {
+			return	
+		}
+		isRunning = true
+		
 		// TODO Should not care about cycle adapter here - move to simulation engine where it is defined.  
 		val cycleAdapter = EcoreUtil.getExistingAdapter(executionContext,
 			EventDrivenCycleAdapter) as EventDrivenCycleAdapter
+
 		try {
 			if (cycleAdapter !== null)
 				executionContext.eAdapters.remove(cycleAdapter)
@@ -165,6 +185,9 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 			var Event event = null
 			do {
 				traceInterpreter.evaluate(beginRunCycleTrace, executionContext)
+				
+				startProcessEvent
+				
 				// activate an event if there is one
 				if (event !== null) {
 					event.event.value = event.value
@@ -179,14 +202,21 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 				}
 				executionContext.clearLocalAndInEvents
 
-				// get next event if available
-				if(! internalEventQueue.empty) event = internalEventQueue.poll
+				endProcessEvent
 				traceInterpreter.evaluate(endRunCycleTrace, executionContext)
+
+				// get next event if available
+				event = nextEvent
+				currentEvent = event
+				
 			} while (event !== null)
 		} finally {
 			if (cycleAdapter !== null)
 				executionContext.eAdapters.add(cycleAdapter)
+			
 		}
+		
+		isRunning = false;
 	}
 
 	def superStepLoop(()=>void microStep) {
@@ -325,14 +355,70 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 	}
 
 	override raise(ExecutionEvent ev, Object value) {
-		if (useInternalEventQueue && ev.direction == Direction::LOCAL) {
-			internalEventQueue.add(new Event(ev, value));
+		if (useEventQueue) { 
+			if (ev.direction == Direction::LOCAL) {
+				internalEventQueue.add(new Event(ev, value))
+				runCycle
+				return
+			} else if (ev.direction == Direction::IN) {
+				inEventQueue.add(new Event(ev, value))
+				return
+			}
+		} 
+		
+		ev.value = value
+		ev.raised = true
+		
+	}
 
+	override defer(ExecutionEvent ev) {
+		println("defer " + ev.name)
+		
+		if (useEventQueue) {
+			if ( ev.direction == Direction::LOCAL) {
+				
+			} else if ( ev.direction == Direction.IN) {
+				if ( ev.raised ) {
+					inEventNextIdx += 1;
+				}		
+			}
 		} else {
-			ev.value = value
-			ev.raised = true
+			// TODO
 		}
 	}
+	
+	def Event nextEvent() {
+		var Event event = null
+
+		if(! internalEventQueue.empty) {
+			event = internalEventQueue.poll
+		}
+		if(! inEventQueue.empty) {
+			event = if (inEventNextIdx < internalEventQueue.size )
+						inEventQueue.get(inEventNextIdx) 
+					else null
+		}
+		
+		if ( event !== null ) {
+			event.isDeferred = false
+		}
+		
+		return event
+		
+	}
+	
+	def startProcessEvent() {
+		inEventDeferred = false
+	}
+
+	def endProcessEvent() {
+		if (!inEventDeferred) {
+			inEventNextIdx = 0
+		} else {
+			inEventNextIdx += 1
+		}
+	}
+
 
 	override boolean isActive() {
 		return executionContext.getAllActiveStates().size > 0
