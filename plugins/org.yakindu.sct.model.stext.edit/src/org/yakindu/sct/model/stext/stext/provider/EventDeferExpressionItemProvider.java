@@ -162,6 +162,11 @@ public class EventDeferExpressionItemProvider extends ExpressionItemProvider {
 		newChildDescriptors.add
 			(createChildParameter
 				(StextPackage.Literals.EVENT_DEFER_EXPRESSION__EVENTS,
+				 StextFactory.eINSTANCE.createSubmachineReferenceExpression()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(StextPackage.Literals.EVENT_DEFER_EXPRESSION__EVENTS,
 				 ExpressionsFactory.eINSTANCE.createAssignmentExpression()));
 
 		newChildDescriptors.add

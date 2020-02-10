@@ -129,6 +129,7 @@ public class StextFactoryImpl extends EFactoryImpl implements StextFactory {
 			case StextPackage.EVENT_VALUE_REFERENCE_EXPRESSION: return createEventValueReferenceExpression();
 			case StextPackage.EVENT_DEFER_EXPRESSION: return createEventDeferExpression();
 			case StextPackage.ACTIVE_STATE_REFERENCE_EXPRESSION: return createActiveStateReferenceExpression();
+			case StextPackage.SUBMACHINE_REFERENCE_EXPRESSION: return createSubmachineReferenceExpression();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -562,6 +563,17 @@ public class StextFactoryImpl extends EFactoryImpl implements StextFactory {
 	public ActiveStateReferenceExpression createActiveStateReferenceExpression() {
 		ActiveStateReferenceExpressionImpl activeStateReferenceExpression = new ActiveStateReferenceExpressionImpl();
 		return activeStateReferenceExpression;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public SubmachineReferenceExpression createSubmachineReferenceExpression() {
+		SubmachineReferenceExpressionImpl submachineReferenceExpression = new SubmachineReferenceExpressionImpl();
+		return submachineReferenceExpression;
 	}
 
 	/**

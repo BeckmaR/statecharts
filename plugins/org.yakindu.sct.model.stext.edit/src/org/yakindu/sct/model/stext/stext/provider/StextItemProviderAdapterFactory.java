@@ -942,6 +942,29 @@ public class StextItemProviderAdapterFactory extends StextAdapterFactory impleme
 	}
 
   /**
+	 * This keeps track of the one adapter used for all {@link org.yakindu.sct.model.stext.stext.SubmachineReferenceExpression} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected SubmachineReferenceExpressionItemProvider submachineReferenceExpressionItemProvider;
+
+		/**
+	 * This creates an adapter for a {@link org.yakindu.sct.model.stext.stext.SubmachineReferenceExpression}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createSubmachineReferenceExpressionAdapter() {
+		if (submachineReferenceExpressionItemProvider == null) {
+			submachineReferenceExpressionItemProvider = new SubmachineReferenceExpressionItemProvider(this);
+		}
+
+		return submachineReferenceExpressionItemProvider;
+	}
+
+		/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1091,6 +1114,7 @@ public class StextItemProviderAdapterFactory extends StextAdapterFactory impleme
 		if (eventValueReferenceExpressionItemProvider != null) eventValueReferenceExpressionItemProvider.dispose();
 		if (eventDeferExpressionItemProvider != null) eventDeferExpressionItemProvider.dispose();
 		if (activeStateReferenceExpressionItemProvider != null) activeStateReferenceExpressionItemProvider.dispose();
+		if (submachineReferenceExpressionItemProvider != null) submachineReferenceExpressionItemProvider.dispose();
 	}
 
 }

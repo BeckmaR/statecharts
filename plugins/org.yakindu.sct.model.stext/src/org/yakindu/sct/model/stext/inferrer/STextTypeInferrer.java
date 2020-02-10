@@ -26,6 +26,7 @@ import org.yakindu.sct.model.stext.stext.EventDeferExpression;
 import org.yakindu.sct.model.stext.stext.EventRaisingExpression;
 import org.yakindu.sct.model.stext.stext.EventValueReferenceExpression;
 import org.yakindu.sct.model.stext.stext.Guard;
+import org.yakindu.sct.model.stext.stext.SubmachineReferenceExpression;
 import org.yakindu.sct.model.stext.stext.TimeEventSpec;
 
 /**
@@ -83,6 +84,10 @@ public class STextTypeInferrer extends ExpressionsTypeInferrer {
 		assertAssignable(eventType, valueType, String.format(EVENT_DEFINITION, valueType, eventType));
 		return valueType;
 
+	}
+	
+	public InferenceResult doInfer(SubmachineReferenceExpression submachineExpression) {
+		return inferTypeDispatch(submachineExpression.getSubmachine());
 	}
 
 	public InferenceResult doInfer(EventDeferExpression e) {
