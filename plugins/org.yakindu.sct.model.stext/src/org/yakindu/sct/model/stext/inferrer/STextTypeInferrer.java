@@ -22,6 +22,7 @@ import org.yakindu.base.types.Event;
 import org.yakindu.base.types.Expression;
 import org.yakindu.sct.model.sgraph.Scope;
 import org.yakindu.sct.model.stext.stext.ActiveStateReferenceExpression;
+import org.yakindu.sct.model.stext.stext.EventDeferExpression;
 import org.yakindu.sct.model.stext.stext.EventRaisingExpression;
 import org.yakindu.sct.model.stext.stext.EventValueReferenceExpression;
 import org.yakindu.sct.model.stext.stext.Guard;
@@ -82,6 +83,10 @@ public class STextTypeInferrer extends ExpressionsTypeInferrer {
 		assertAssignable(eventType, valueType, String.format(EVENT_DEFINITION, valueType, eventType));
 		return valueType;
 
+	}
+
+	public InferenceResult doInfer(EventDeferExpression e) {
+		return getResultFor(VOID);
 	}
 
 	protected Event deresolve(Expression e) {

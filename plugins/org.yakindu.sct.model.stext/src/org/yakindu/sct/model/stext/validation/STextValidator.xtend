@@ -111,6 +111,7 @@ import static org.yakindu.sct.model.stext.lib.StatechartAnnotations.CHILD_FIRST_
 import static org.yakindu.sct.model.stext.lib.StatechartAnnotations.CYCLE_BASED_ANNOTATION
 import static org.yakindu.sct.model.stext.lib.StatechartAnnotations.EVENT_DRIVEN_ANNOTATION
 import static org.yakindu.sct.model.stext.lib.StatechartAnnotations.PARENT_FIRST_ANNOTATION
+import org.yakindu.sct.model.stext.stext.EventDeferExpression
 
 /** 
  * Several validations for nonsensical expressions.
@@ -694,7 +695,7 @@ class STextValidator extends AbstractSTextValidator implements STextValidationMe
 	@Check(CheckType.FAST)
 	def void checkReactionEffectActions(ReactionEffect effect) {
 		for (Expression exp : effect.getActions()) {
-			if (!(exp instanceof AssignmentExpression) && !(exp instanceof EventRaisingExpression) && !(exp instanceof PostFixUnaryExpression)) {
+			if (!(exp instanceof AssignmentExpression) && !(exp instanceof EventRaisingExpression) && !(exp instanceof EventDeferExpression) && !(exp instanceof PostFixUnaryExpression)) {
 				if (exp instanceof FeatureCall) {
 					checkFeatureCallEffect(exp) 
 				} else if (exp instanceof ElementReferenceExpression) {

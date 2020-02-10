@@ -31,6 +31,8 @@ import static org.yakindu.base.expressions.expressions.ExpressionsPackage.Litera
 import static org.yakindu.base.types.TypesPackage.Literals.TYPE_SPECIFIER__TYPE;
 import static org.yakindu.sct.model.stext.stext.StextPackage.Literals.EVENT_RAISING_EXPRESSION;
 import static org.yakindu.sct.model.stext.stext.StextPackage.Literals.EVENT_RAISING_EXPRESSION__VALUE;
+import static org.yakindu.sct.model.stext.stext.StextPackage.Literals.EVENT_DEFER_EXPRESSION;
+import static org.yakindu.sct.model.stext.stext.StextPackage.Literals.EVENT_DEFER_EXPRESSION__EVENTS;
 import static org.yakindu.sct.model.stext.stext.StextPackage.Literals.EVENT_VALUE_REFERENCE_EXPRESSION;
 import static org.yakindu.sct.model.stext.stext.StextPackage.Literals.LOCAL_REACTION;
 import static org.yakindu.sct.model.stext.stext.StextPackage.Literals.REACTION_EFFECT;
@@ -121,6 +123,8 @@ public class ContextPredicateProvider {
 		filter.put(key(EVENT_RAISING_EXPRESSION), EVENTS);
 		filter.put(key(EVENT_RAISING_EXPRESSION, EVENT_RAISING_EXPRESSION__VALUE),
 				or(VARIABLES, OPERATIONS, EVENTS, ENUMERATIONS));
+		filter.put(key(EVENT_DEFER_EXPRESSION), EVENTS);
+		filter.put(key(EVENT_DEFER_EXPRESSION, EVENT_DEFER_EXPRESSION__EVENTS), EVENTS);
 		filter.put(key(REGULAR_EVENT_SPEC), EVENTS);
 		filter.put(key(EVENT_VALUE_REFERENCE_EXPRESSION), EVENTS);
 		filter.put(key(REACTION_EFFECT), or(VARIABLES, OPERATIONS, EVENTS, ENUMERATIONS));
