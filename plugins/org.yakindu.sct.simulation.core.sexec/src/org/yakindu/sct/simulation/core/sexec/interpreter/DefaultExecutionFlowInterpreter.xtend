@@ -72,14 +72,16 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 		}
 	}
 
+	protected boolean isRunning = false
+
 	protected Event currentEvent = null;
+	protected boolean currentEventDeferred = false
 	
 	protected List<Event> inEventQueue = new LinkedList<Event>()
 	protected int inEventNextIdx = 0
-	protected boolean inEventDeferred = false
-	protected boolean isRunning = false
 	
-	protected Queue<Event> internalEventQueue = new LinkedList<Event>()
+	protected List<Event> internalEventQueue = new LinkedList<Event>()
+	protected int internalEventNextIdx = 0
 	
 
 	@Inject
@@ -182,35 +184,40 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 
 			executionContext.clearOutEvents
 
-			var Event event = null
-			do {
-				traceInterpreter.evaluate(beginRunCycleTrace, executionContext)
+			inEventLoop[internalEventLoop[superStep[rtcStep]]]
+		
+//			var Event event = null
+//			do {
+//				traceInterpreter.evaluate(beginRunCycleTrace, executionContext)
 				
-				startProcessEvent
+//				startProcessEvent
 				
 				// activate an event if there is one
-				if (event !== null) {
-					event.event.value = event.value
-					event.event.raised = true
-					event = null
-				}
+//				if (event !== null) {
+//					event.event.value = event.value
+//					event.event.raised = true
+//					event = null
+//				}
 				// perform a run to completion step
-				if (useSuperStep) {
-					superStepLoop([rtcStep])                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-				} else {
-					rtcStep
-				}
-				executionContext.clearLocalAndInEvents
+//				if (useSuperStep) {
+//					superStep([rtcStep])                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+//				} else {
+//					rtcStep
+//				}
 
-				endProcessEvent
-				traceInterpreter.evaluate(endRunCycleTrace, executionContext)
+				
+
+//				executionContext.clearLocalAndInEvents
+
+//				endProcessEvent
+//				traceInterpreter.evaluate(endRunCycleTrace, executionContext)
 
 				// get next event if available
-				event = nextEvent
+//				event = nextEvent
 				// TODO : remove processed events ...
-				currentEvent = event
+//				currentEvent = event
 				
-			} while (event !== null)
+//			} while (event !== null)
 		} finally {
 			if (cycleAdapter !== null)
 				executionContext.eAdapters.add(cycleAdapter)
@@ -220,14 +227,90 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 		isRunning = false;
 	}
 
-	def superStepLoop(()=>void microStep) {
+
+
+	def void inEventLoop(()=>void processStep) {
+		
+		do {
+			traceInterpreter.evaluate(beginRunCycleTrace, executionContext)
+			
+			println("ieq:  " + inEventQueue.map[e | e.event.name])
+			println("ieni: " + inEventNextIdx)
+			if (inEventNextIdx < inEventQueue.size ) {
+				currentEvent = inEventQueue.get(inEventNextIdx)
+				
+				currentEvent.event.value = currentEvent.value
+				currentEvent.event.raised = true
+				
+				currentEventDeferred = false
+				
+				processStep.apply
+				
+				if (currentEventDeferred ) {
+					inEventNextIdx += 1
+				} else {
+					inEventQueue.remove(inEventNextIdx)
+					inEventNextIdx = 0
+				}
+			} else {
+				return
+			}
+			
+			executionContext.clearLocalAndInEvents
+			
+			traceInterpreter.evaluate(endRunCycleTrace, executionContext)
+			
+			
+		} while ( true )		
+	}
+	
+	def void internalEventLoop(()=>void processStep) {
+		
+		processStep.apply
+		internalEventNextIdx = 0
+		executionContext.clearLocalAndInEvents
+		
+		do {
+			
+			println("internalEQ:  " + internalEventNextIdx + " "+ internalEventQueue.map[e | e.event.name])
+			if (internalEventNextIdx < internalEventQueue.size ) {
+				currentEvent = internalEventQueue.get(internalEventNextIdx)
+				
+				currentEvent.event.value = currentEvent.value
+				currentEvent.event.raised = true
+				
+				currentEventDeferred = false
+				
+				processStep.apply
+				
+				if (currentEventDeferred ) {
+					internalEventNextIdx += 1
+					currentEventDeferred = false
+				} else {
+					internalEventQueue.remove(internalEventNextIdx)
+					internalEventNextIdx = 0
+				}
+			} else {
+				return
+			}
+			
+			executionContext.clearLocalAndInEvents
+						
+			
+		} while ( true )		
+	}
+	
+
+	
+	def void superStep(()=>void microStep) {
 		do {
 			stateVectorChanged = false
 			microStep.apply
 		} while (stateVectorChanged)
 	}
 
-	def rtcStep() {
+
+	def void rtcStep() {
 		activeStateIndex = 0
 		if(executionContext.executedElements.size > 0) executionContext.executedElements.clear
 		while (activeStateIndex < activeStateConfiguration.size) {
@@ -345,7 +428,8 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 		val timeEvent = scheduleTimeEvent.timeEvent
 		val duration = statementInterpreter.evaluate(scheduleTimeEvent.timeValue, executionContext)
 		timingService.scheduleTimeTask(new TimeTask(timeEvent.name, [
-			executionContext.getEvent(timeEvent.name).raised = true
+			raise(executionContext.getEvent(timeEvent.name), null)
+//			executionContext.getEvent(timeEvent.name).raised = true
 		]), timeEvent.periodic, duration as Long)
 		null
 	}
@@ -373,26 +457,20 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 	}
 
 	override defer(ExecutionEvent ev) {
-		println("defer " + ev.name)
 		
-		if (useEventQueue) {
-			if ( ev.direction == Direction::LOCAL) {
-				
-			} else if ( ev.direction == Direction.IN) {
-				if ( ev.raised ) {
-					inEventNextIdx += 1;
-				}		
-			}
-		} else {
-			// TODO
+		if (currentEvent.event === ev)
+		{
+			println("defer " + ev.name)
+			currentEventDeferred = true
 		}
 	}
+
 	
 	def Event nextEvent() {
 		var Event event = null
 
 		if(! internalEventQueue.empty) {
-			event = internalEventQueue.poll
+			event = internalEventQueue.get(internalEventNextIdx)
 		}
 		if(! inEventQueue.empty) {
 			event = if (inEventNextIdx < inEventQueue.size )
@@ -409,11 +487,11 @@ class DefaultExecutionFlowInterpreter implements IExecutionFlowInterpreter, IEve
 	}
 	
 	def startProcessEvent() {
-		inEventDeferred = false
+		currentEventDeferred = false
 	}
 
 	def endProcessEvent() {
-		if (!inEventDeferred) {
+		if (!currentEventDeferred) {
 			inEventNextIdx = 0
 		} else {
 			inEventNextIdx += 1
