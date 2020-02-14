@@ -19,6 +19,7 @@ import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RelativeBendpoint;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.yakindu.base.gmf.runtime.router.GeometryUtil.Line;
@@ -30,6 +31,14 @@ public class RubberBandRoutingSupport {
 	protected Map<Connection, ConnData> conn = new HashMap<>();
 	private Rectangle origDraggedBoundsAbs;
 	private MaxMoveDelta[] mmds = new MaxMoveDelta[4];
+	private double[] prevDeltas = null;
+
+//	public void _initBoxDrag(IGraphicalEditPart host, ChangeBoundsRequest request) {
+//		List<Connection> sourceConnections = getSourceConnections(host, request);
+//		List<Connection> targetConnections = getTargetConnections(host, request);
+//		getBoundsAbs(host, request);
+//		dd();
+//	}
 
 	public void abortBoxDrag() {
 		// force locations only
@@ -192,6 +201,107 @@ public class RubberBandRoutingSupport {
 		}
 	}
 
+//	private void dd() {
+//		System.out.println("[RB] conns=" + conn.size());
+//		System.out.println("[RB] ibox=");
+//		Set<Connection> keys = conn.keySet();
+//
+//		int i = 1;
+//
+//		for (Connection c : keys) {
+//			String pre = String.format("[%2d] ", i);
+//			ConnData d = conn.get(c);
+//			String srcSide = d.isSourceVertical ? "|" : "/";
+//			String tgtSide = d.isTargetVertical ? "|" : "/";
+//			String ctype = d.isReflexive ? "<->" : d.isSource ? "<--" : "-->";
+//			String cshort = srcSide + ctype + tgtSide;
+//			String initialPts = "";
+//			for (Point p : d.initialVisualPoints) {
+//				initialPts += String.format("(%3d,%3d) ", p.x, p.y);
+//			}
+//			String currentPts = "";
+//			for (Point p : d.getVisualPoints()) {
+//				currentPts += "(" + p.x + "," + p.y + "), ";
+//			}
+//			String spaces = String.format("%" + cshort.length() + "s", "");
+//			System.out.println(pre + cshort + " ips: " + initialPts);
+//			System.out.println(pre + spaces + " cps: " + currentPts);
+//			IFigure srcOwner = d.conn.getSourceAnchor().getOwner();
+//			IFigure tgtOwner = d.conn.getTargetAnchor().getOwner();
+//			Rectangle srcBounds = getBounds(d.conn, srcOwner);
+//			Rectangle tgtBounds = getBounds(d.conn, tgtOwner);
+//			System.out.println(pre + spaces + " srcbox=" + srcBounds);
+//			System.out.println(pre + spaces + " tgtbox=" + tgtBounds);
+//
+//			i++;
+//		}
+//	}
+
+	private String debugBox(Rectangle r) {
+		return "new Rectangle(" + r.x + ", " + r.y + ", " + r.width + ", " + r.height + ")";
+	}
+
+	private void debugConnections(String var, List<Connection> sourceConnections) {
+		for (Connection c : sourceConnections) {
+			double[] tx = determineTransform(c);
+			Rectangle srcBox = getBounds(c, c.getSourceAnchor().getOwner());
+			Rectangle tgtBox = getBounds(c, c.getTargetAnchor().getOwner());
+			System.out.println("    {");
+			System.out.println("        List<Point> points = new ArrayList<>();");
+			PointList points = c.getPoints();
+			for (int i = 0; i < points.size(); i++) {
+				Point p = points.getPoint(i);
+				System.out.println("        points.add(new Point(" + p.x + "," + p.y + ")" + ");");
+			}
+			String tstr = (tx[0] == 0) && (tx[1] == 0) && (tx[2] == 1) ? ""
+					: "s=" + tx[2] + ",t=(" + tx[0] + "," + tx[1] + "), ";
+			System.out.println("        " + var + ".add(new ConnMock(" + tstr + debugBox(srcBox) + ", "
+					+ debugBox(tgtBox) + ", points));");
+			System.out.println("    }");
+		}
+	}
+
+	private void debugInit(Rectangle originalAbs, List<Connection> sourceConnections,
+			List<Connection> targetConnections) {
+		System.out.println("{");
+		System.out.println("    Rectangle boundsAbs = " + debugBox(originalAbs) + ";");
+		System.out.println("    List<Connection> srcConns = new ArrayList<>();");
+		debugConnections("srcConns", sourceConnections);
+		System.out.println("    List<Connection> tgtConns = new ArrayList<>();");
+		debugConnections("tgtConns", targetConnections);
+		System.out.println("    rb.initBoxDrag(boundsAbs, srcConns, tgtConns);");
+		System.out.println("}");
+	}
+
+	private void debugUpdate() {
+		List<Connection> srcConns = new ArrayList<>();
+		List<Connection> tgtConns = new ArrayList<>();
+		for (ConnData cd : conn.values()) {
+			if (cd.isReflexive) {
+				srcConns.add(cd.conn);
+				tgtConns.add(cd.conn);
+			} else if (cd.isSource) {
+				srcConns.add(cd.conn);
+			} else {
+				tgtConns.add(cd.conn);
+			}
+		}
+
+		System.out.println("    List<Connection> srcConns = new ArrayList<>();");
+		debugConnections("srcConns", srcConns);
+		System.out.println("    List<Connection> tgtConns = new ArrayList<>();");
+		debugConnections("tgtConns", tgtConns);
+//		dd();
+	}
+
+	private double[] determineTransform(Connection c) {
+		PrecisionPoint origin = new PrecisionPoint(0, 0);
+		PrecisionPoint oneZero = new PrecisionPoint(1, 0);
+		c.translateToRelative(origin);
+		c.translateToRelative(oneZero);
+		return new double[] { origin.preciseX(), origin.preciseY(), oneZero.preciseX() };
+	}
+
 	private List<PrecisionPoint> dragAnchoredSegments(ConnData cd, Rectangle sourceBox, Rectangle targetBox,
 			double localDx, double localDy, double localDw, double localDh) {
 		List<PrecisionPoint> pointsCopy = cd.getInitialVisualPointsCopy();
@@ -306,6 +416,20 @@ public class RubberBandRoutingSupport {
 		return pointsCopy;
 	}
 
+//	private List<ConnectionEditPart> filter(List<ConnectionEditPart> allConnectionParts, ChangeBoundsRequest request) {
+//		if (request.getEditParts() == null) {
+//			return allConnectionParts;
+//		}
+//		List<ConnectionEditPart> result = new ArrayList<>();
+//		for (ConnectionEditPart input : allConnectionParts) {
+//			if (!(request.getEditParts().contains(input.getTarget())
+//					&& request.getEditParts().contains(input.getSource()))) {
+//				result.add(input);
+//			}
+//		}
+//		return result;
+//	}
+
 	protected void forceInitialLocations(ConnData cd) {
 		List<RelativeBendpoint> constraint = createConstraint(cd.conn, cd.initialVisualPoints);
 		ConnectionRouter router = cd.conn.getConnectionRouter();
@@ -320,18 +444,82 @@ public class RubberBandRoutingSupport {
 		return sourceBox;
 	}
 
+//	private void getBoundsAbs(IGraphicalEditPart host, ChangeBoundsRequest request) {
+//		IFigure figure = host.getFigure();
+//		Rectangle boundsAbs = figure.getBounds().getCopy();
+//		figure.translateToAbsolute(boundsAbs);
+//		boundsAbs.translate(request.getMoveDelta().getNegated()).resize(request.getSizeDelta().getNegated());
+//	}
+
 	public ConnData getCD(IFigure figure) {
 		return conn.get(figure);
 	}
 
+//	private List<Connection> getSourceConnections(IGraphicalEditPart host, ChangeBoundsRequest request) {
+//		List<Connection> result = new ArrayList<>();
+//		@SuppressWarnings("unchecked")
+//		List<IGraphicalEditPart> sourceConnections = filter(host.getSourceConnections(), request);
+//		for (IGraphicalEditPart iGraphicalEditPart : sourceConnections) {
+//			Connection connection = (Connection) iGraphicalEditPart.getFigure();
+//			result.add(connection);
+//		}
+//		return result;
+//	}
+//
+//	private List<Connection> getTargetConnections(IGraphicalEditPart host, ChangeBoundsRequest request) {
+//		List<Connection> result = new ArrayList<>();
+//		@SuppressWarnings("unchecked")
+//		List<IGraphicalEditPart> targetConnections = filter(host.getTargetConnections(), request);
+//		for (IGraphicalEditPart iGraphicalEditPart : targetConnections) {
+//			Connection connection = (Connection) iGraphicalEditPart.getFigure();
+//			result.add(connection);
+//		}
+//		return result;
+//	}
+
+	public List<Connection> getSourceConnections() {
+		List<Connection> srcConns = new ArrayList<>();
+		List<Connection> tgtConns = new ArrayList<>();
+		for (ConnData cd : conn.values()) {
+			if (cd.isReflexive) {
+				srcConns.add(cd.conn);
+				tgtConns.add(cd.conn);
+			} else if (cd.isSource) {
+				srcConns.add(cd.conn);
+			} else {
+				tgtConns.add(cd.conn);
+			}
+		}
+		return srcConns;
+	}
+
+	public List<Connection> getTargetConnections() {
+		List<Connection> srcConns = new ArrayList<>();
+		List<Connection> tgtConns = new ArrayList<>();
+		for (ConnData cd : conn.values()) {
+			if (cd.isReflexive) {
+				srcConns.add(cd.conn);
+				tgtConns.add(cd.conn);
+			} else if (cd.isSource) {
+				srcConns.add(cd.conn);
+			} else {
+				tgtConns.add(cd.conn);
+			}
+		}
+		return tgtConns;
+	}
+
 	public void initBoxDrag(Rectangle originalAbs, List<Connection> sourceConnections,
 			List<Connection> targetConnections) {
+		debugInit(originalAbs, sourceConnections, targetConnections);
+
 		// save original bounds in asbolute coordinates
 		origDraggedBoundsAbs = originalAbs.getCopy();
 
 		// clear connection data (FIXME: do this at the end of interaction, not at the
 		// start)
 		conn.clear();
+		prevDeltas = null;
 
 		for (int i = 0; i < mmds.length; i++) {
 			mmds[i] = new MaxMoveDelta((i % 2) != 0);
@@ -363,19 +551,6 @@ public class RubberBandRoutingSupport {
 		initDrag(originalAbs, pureSource, true, false);
 		initDrag(originalAbs, pureTarget, false, true);
 		initDrag(originalAbs, reflexive, true, true);
-
-//		if (conn.size() > 1) {
-//			System.out.println("boundsAbs = " + originalAbs);
-//			for (ConnData cd : conn.values()) {
-//				Rectangle boundsRel = originalAbs.getCopy();
-//				cd.conn.translateToRelative(boundsRel);
-//				System.out.println("boundsRel = " + boundsRel);
-//				cd.printPoints(cd.initialVisualPoints);
-//			}
-//			for (int i = 0; i < mmds.length; i++) {
-//				System.out.println("mmds[" + i + "] = " + mmds[i]);
-//			}
-//		}
 	}
 
 	private void initDrag(Rectangle originalAbs, List<Connection> connections, boolean isSource, boolean isTarget) {
@@ -403,6 +578,14 @@ public class RubberBandRoutingSupport {
 		double dw = newBoundsAbs.preciseWidth() - origDraggedBoundsAbs.preciseWidth();
 		double dh = newBoundsAbs.preciseHeight() - origDraggedBoundsAbs.preciseHeight();
 
+		if (prevDeltas != null) {
+			if ((dx == prevDeltas[0]) && (dy == prevDeltas[1]) && (dw == prevDeltas[2]) && (dh == prevDeltas[3])) {
+				// we did this already...
+				return;
+			}
+		}
+		prevDeltas = new double[] { dx, dy, dw, dh };
+
 		if ((dx == 0) && (dy == 0) && (dw == 0) && (dh == 0)) {
 			// force locations only
 			for (ConnData cd : conn.values()) {
@@ -410,10 +593,13 @@ public class RubberBandRoutingSupport {
 			}
 			return;
 		} else {
-//			System.out.println("bounds changed " + dx + ", " + dy + ", " + dw + ", " + dh);
+			System.out.println("rb.updateBoxDrag(" + debugBox(newBoundsAbs) + ");");
 		}
 
 		for (ConnData cd : conn.values()) {
+			System.out.println("CONN");
+			cd.printVisualPoints();
+
 			// compute deltas in local coordinate system
 			Rectangle brel = origDraggedBoundsAbs.getCopy();
 			cd.conn.translateToRelative(brel);
@@ -423,6 +609,7 @@ public class RubberBandRoutingSupport {
 			double localDy = bnrel.preciseY() - brel.preciseY();
 			double localDw = bnrel.preciseWidth() - brel.preciseWidth();
 			double localDh = bnrel.preciseHeight() - brel.preciseHeight();
+			System.out.println("local deltas = " + localDx + ", " + localDy + ", " + localDw + ", " + localDh);
 
 			// drag anchored segment if necessary
 			IFigure targetOwner = cd.conn.getTargetAnchor().getOwner();
@@ -430,10 +617,13 @@ public class RubberBandRoutingSupport {
 			IFigure sourceOwner = cd.conn.getSourceAnchor().getOwner();
 			boolean isSelfAssoc = targetOwner == sourceOwner;
 			Rectangle sourceBox = isSelfAssoc ? targetBox : getBounds(cd.conn, sourceOwner);
+			System.out.println("sourceBox = " + debugBox(sourceBox) + ", owner = " + sourceOwner);
+			System.out.println("targetBox = " + debugBox(targetBox) + ", owner = " + targetOwner);
 			List<PrecisionPoint> pointsCopy = dragAnchoredSegments(cd, sourceBox, targetBox, localDx, localDy, localDw,
 					localDh);
 
 //			cd.printVisualPoints();
+//			System.out.println("dragged:");
 //			cd.printPoints(pointsCopy);
 
 			List<RelativeBendpoint> constraint = createConstraint(cd.conn, pointsCopy);
@@ -444,6 +634,9 @@ public class RubberBandRoutingSupport {
 //			((TransitionFigure) cd.conn).disableRepaint();
 			router.setConstraint(cd.conn, constraint);
 			router.route(cd.conn);
+
+			System.out.println("after route:");
+			cd.printVisualPoints();
 
 			// cut source, target, and loops
 			List<PrecisionPoint> list = cd.getVisualPoints();
@@ -461,12 +654,14 @@ public class RubberBandRoutingSupport {
 
 //			((TransitionFigure) cd.conn).enableRepaint();
 			router.setConstraint(cd.conn, updatedConstraint);
-//			cd.printBendpointLocations();
+			cd.printBendpointLocations();
 			router.route(cd.conn);
 
 //			System.out.println("after all");
 //			cd.printVisualPoints();
 //			System.out.println();
 		}
+
+		debugUpdate();
 	}
 }

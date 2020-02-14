@@ -39,7 +39,6 @@ import org.yakindu.sct.ui.editor.commands.SetConnectionBendpointsAndLabelCommman
 
 import com.google.common.collect.Lists;
 
-
 public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 
 	public static final String ROLE = "Fixed_Bendpoints";
@@ -85,6 +84,21 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 		if (request instanceof ChangeBoundsRequest) {
 			eraseChangeBoundsFeedback((ChangeBoundsRequest) request);
 		}
+	}
+
+	protected List<ConnectionEditPart> filter(List<ConnectionEditPart> allConnectionParts,
+			ChangeBoundsRequest request) {
+		if (request.getEditParts() == null) {
+			return allConnectionParts;
+		}
+		List<ConnectionEditPart> result = Lists.newArrayList();
+		for (ConnectionEditPart input : allConnectionParts) {
+			if (!(request.getEditParts().contains(input.getTarget())
+					&& request.getEditParts().contains(input.getSource()))) {
+				result.add(input);
+			}
+		}
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -183,6 +197,7 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 	}
 
 	protected void showChangeBoundsFeedback(ChangeBoundsRequest request) {
+		System.out.println("BEND POINTS");
 		if (request.getEditParts().get(0) != getHost()) {
 			// XXX: policy is also called for composites
 			justKeepConnectionsInPlace(request);
@@ -220,19 +235,5 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 				showLineFeedback(cep);
 			}
 		}
-	}
-
-	protected List<ConnectionEditPart> filter(List<ConnectionEditPart> allConnectionParts,
-			ChangeBoundsRequest request) {
-		if (request.getEditParts() == null)
-			return allConnectionParts;
-		List<ConnectionEditPart> result = Lists.newArrayList();
-		for (ConnectionEditPart input : allConnectionParts) {
-			if(!(request.getEditParts().contains(input.getTarget())
-					&& request.getEditParts().contains(input.getSource()))) {
-				result.add(input);
-			}
-		}
-		return result;
 	}
 }

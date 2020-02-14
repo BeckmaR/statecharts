@@ -34,6 +34,20 @@ public class LiveFeedbackResizableEditPolicy extends ResizableEditPolicyEx {
 	private final ChangeBoundsRequest NULL_REQUEST = new ChangeBoundsRequest(REQ_MOVE_CHILDREN);
 	private String lastRequest = "";
 
+	protected void enforceConstraintForMove(ChangeBoundsRequest request) {
+		Rectangle relativeBounds = getOriginalBounds();
+		Rectangle transformed = request.getTransformedRectangle(relativeBounds);
+		getHostFigure().getParent().translateToRelative(transformed);
+		if (transformed.x < 0) {
+			Point moveDelta = request.getMoveDelta();
+			moveDelta.x -= transformed.x;
+		}
+		if (transformed.y < 0) {
+			Point moveDelta = request.getMoveDelta();
+			moveDelta.y -= transformed.y;
+		}
+	}
+
 	@Override
 	protected void eraseChangeBoundsFeedback(ChangeBoundsRequest request) {
 		connectionStart = true;
@@ -54,11 +68,6 @@ public class LiveFeedbackResizableEditPolicy extends ResizableEditPolicyEx {
 			updateOriginalBounds();
 		}
 		return originalBounds.getCopy();
-	}
-
-	protected void updateOriginalBounds() {
-		originalBounds = getHostFigure().getBounds().getCopy();
-		getHostFigure().translateToAbsolute(originalBounds);
 	}
 
 	@Override
@@ -91,12 +100,6 @@ public class LiveFeedbackResizableEditPolicy extends ResizableEditPolicyEx {
 		return new ResizeTracker((GraphicalEditPart) getHost(), direction) {
 
 			@Override
-			protected void updateSourceRequest() {
-				enforceConstraintForMove((ChangeBoundsRequest) getSourceRequest());
-				super.updateSourceRequest();
-			}
-
-			@Override
 			protected void enforceConstraintsForResize(ChangeBoundsRequest request) {
 				final IFigure figure = getHostFigure();
 				Dimension prefSize = figure.getPreferredSize().getCopy();
@@ -113,25 +116,21 @@ public class LiveFeedbackResizableEditPolicy extends ResizableEditPolicyEx {
 				request.setSizeDelta(request.getSizeDelta());
 			}
 
-		};
-	}
+			@Override
+			protected void updateSourceRequest() {
+				enforceConstraintForMove((ChangeBoundsRequest) getSourceRequest());
+				super.updateSourceRequest();
+			}
 
-	protected void enforceConstraintForMove(ChangeBoundsRequest request) {
-		Rectangle relativeBounds = getOriginalBounds();
-		Rectangle transformed = request.getTransformedRectangle(relativeBounds);
-		getHostFigure().getParent().translateToRelative(transformed);
-		if (transformed.x < 0) {
-			Point moveDelta = request.getMoveDelta();
-			moveDelta.x -= transformed.x;
-		}
-		if (transformed.y < 0) {
-			Point moveDelta = request.getMoveDelta();
-			moveDelta.y -= transformed.y;
-		}
+		};
 	}
 
 	@Override
 	protected void showChangeBoundsFeedback(ChangeBoundsRequest request) {
+		System.out.println("LIVE FEEDBACK " + request.getMoveDelta());
+		Rectangle hostBoundsAbs = getHostFigure().getBounds().getCopy();
+		getHostFigure().translateToAbsolute(hostBoundsAbs);
+		System.out.println("host figure = " + getHostFigure() + ", bounds = " + hostBoundsAbs);
 		// If REQ_DROP is delivered 2 times in a row it is a "real" drop and not only a
 		// hover over existing elements in the same region
 		if (RequestConstants.REQ_DROP.equals(request.getType()) && RequestConstants.REQ_DROP.equals(lastRequest)) {
@@ -151,8 +150,15 @@ public class LiveFeedbackResizableEditPolicy extends ResizableEditPolicyEx {
 		Rectangle rect = request.getTransformedRectangle(getOriginalBounds());
 		getHostFigure().getParent().translateToRelative(rect);
 		getHostFigure().setBounds(rect);
+		hostBoundsAbs = getHostFigure().getBounds().getCopy();
+		getHostFigure().translateToAbsolute(hostBoundsAbs);
+		System.out.println("host figure = " + getHostFigure() + ", bounds = " + hostBoundsAbs);
 		getHostFigure().getParent().setConstraint(getHostFigure(), rect);
 		lastRequest = (String) request.getType();
 	}
 
+	protected void updateOriginalBounds() {
+		originalBounds = getHostFigure().getBounds().getCopy();
+		getHostFigure().translateToAbsolute(originalBounds);
+	}
 }

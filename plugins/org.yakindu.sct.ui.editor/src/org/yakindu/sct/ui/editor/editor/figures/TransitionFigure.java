@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
  * 	committers of YAKINDU - initial API and implementation
- * 
+ *
  */
 package org.yakindu.sct.ui.editor.editor.figures;
 
@@ -14,19 +14,20 @@ import java.lang.reflect.Field;
 
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode;
 
 /**
- * 
+ *
  * @author muelder
- * 
+ *
  */
 public class TransitionFigure extends PolylineConnectionEx {
 
-	private final IMapMode mapMode;
-
 	protected static final int TOLERANCE = 4;
+
+	private final IMapMode mapMode;
 
 	public TransitionFigure(IMapMode mapMode) {
 		this(mapMode, false);
@@ -36,10 +37,34 @@ public class TransitionFigure extends PolylineConnectionEx {
 		this.mapMode = mapMode;
 		setTolerance();
 		setLineWidth(mapMode.DPtoLP(1));
-		if (reversed)
+		if (reversed) {
 			setSourceDecoration(createTargetDecoration());
-		else
+		} else {
 			setTargetDecoration(createTargetDecoration());
+		}
+	}
+
+	private RotatableDecoration createTargetDecoration() {
+		PolygonDecoration df = new PolygonDecoration();
+		df.setFill(true);
+		df.setLineWidth(getMapMode().DPtoLP(1));
+		df.setTemplate(PolygonDecoration.TRIANGLE_TIP);
+		return df;
+	}
+
+	protected IMapMode getMapMode() {
+		return mapMode;
+	}
+
+	@Override
+	public void layout() {
+		// TODO Auto-generated method stub
+		super.layout();
+		Rectangle srcBox = getSourceAnchor().getOwner().getBounds().getCopy();
+		getSourceAnchor().getOwner().translateToAbsolute(srcBox);
+		Rectangle tgtBox = getTargetAnchor().getOwner().getBounds().getCopy();
+		getTargetAnchor().getOwner().translateToAbsolute(tgtBox);
+		System.out.println("Did layout " + srcBox + ", " + tgtBox);
 	}
 
 	protected void setTolerance() {
@@ -52,17 +77,5 @@ public class TransitionFigure extends PolylineConnectionEx {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	protected IMapMode getMapMode() {
-		return mapMode;
-	}
-	
-	private RotatableDecoration createTargetDecoration() {
-		PolygonDecoration df = new PolygonDecoration();
-		df.setFill(true);
-		df.setLineWidth(getMapMode().DPtoLP(1));
-		df.setTemplate(PolygonDecoration.TRIANGLE_TIP);
-		return df;
 	}
 }

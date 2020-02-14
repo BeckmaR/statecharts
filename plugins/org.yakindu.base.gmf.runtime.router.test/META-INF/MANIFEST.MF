@@ -7,4 +7,5 @@ Automatic-Module-Name: org.yakindu.base.gmf.runtime.router.test
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.yakindu.base.gmf.runtime,
  org.junit,
- org.eclipse.draw2d
+ org.eclipse.draw2d,
+ org.eclipse.gmf.runtime.draw2d.ui
