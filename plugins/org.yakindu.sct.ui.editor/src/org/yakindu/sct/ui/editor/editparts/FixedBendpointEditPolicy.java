@@ -180,8 +180,7 @@ public class FixedBendpointEditPolicy extends GraphicalEditPolicy {
 			router.initBoxDrag(originalBounds, getSourceConnections(request), getTargetConnections(request));
 			connectionStart = false;
 		}
-		// XXX: always pass in original bounds so that initial locations are forced
-		router.updateBoxDrag(originalBounds);
+		router.restoreInitialLocations();
 	}
 
 	private void routeInResponseToBoxDrag(ChangeBoundsRequest request) {

@@ -572,6 +572,12 @@ public class RubberBandRoutingSupport {
 		}
 	}
 
+	public void restoreInitialLocations() {
+		for (ConnData cd : conn.values()) {
+			forceInitialLocations(cd);
+		}
+	}
+
 	public void updateBoxDrag(Rectangle newBoundsAbs) {
 		double dx = newBoundsAbs.preciseX() - origDraggedBoundsAbs.preciseX();
 		double dy = newBoundsAbs.preciseY() - origDraggedBoundsAbs.preciseY();
