@@ -24,8 +24,8 @@ import org.eclipse.gmf.runtime.diagram.ui.editpolicies.ConnectionBendpointEditPo
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.gef.ui.internal.editpolicies.LineMode;
 import org.eclipse.gmf.runtime.notation.Edge;
+import org.yakindu.base.gmf.runtime.commands.SetConnectionBendpointsAndLabelCommmand;
 import org.yakindu.base.xtext.utils.gmf.routing.InitialPointsOfRequestDataManager;
-import org.yakindu.sct.ui.editor.commands.SetConnectionBendpointsAndLabelCommmand;
 
 /**
  * Mostly copied from

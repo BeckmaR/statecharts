@@ -1,4 +1,4 @@
-package org.yakindu.sct.ui.editor.editparts;
+package org.yakindu.base.gmf.runtime.editparts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,6 @@ import org.yakindu.base.gmf.runtime.router.RubberBandRoutingSupport;
 import org.yakindu.base.xtext.utils.gmf.commands.SetLabelsOffsetOperation;
 import org.yakindu.base.xtext.utils.gmf.directedit.ExternalXtextLabelEditPart;
 import org.yakindu.base.xtext.utils.gmf.routing.EdgeLabelLocator;
-
-import com.google.common.collect.Lists;
 
 public class FixedBendpointPolicySupport {
 
@@ -84,7 +82,7 @@ public class FixedBendpointPolicySupport {
 		if (request.getEditParts() == null) {
 			return allConnectionParts;
 		}
-		List<ConnectionEditPart> result = Lists.newArrayList();
+		List<ConnectionEditPart> result = new ArrayList<>();
 		for (ConnectionEditPart input : allConnectionParts) {
 			if (!(request.getEditParts().contains(input.getTarget())
 					&& request.getEditParts().contains(input.getSource()))) {

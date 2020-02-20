@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
  * 	committers of YAKINDU - initial API and implementation
- * 
+ *
  */
 package org.yakindu.sct.ui.editor.policies;
 
@@ -30,9 +30,9 @@ import org.yakindu.base.gmf.runtime.editpolicies.SetPreferredSizeRequest;
 
 /**
  * Adds a square selection handle that set the bounds to the preferred size
- * 
+ *
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 @SuppressWarnings("all")
 public class PreferredSizeHandlerEditPolicy extends LiveFeedbackResizableEditPolicy {
@@ -44,13 +44,18 @@ public class PreferredSizeHandlerEditPolicy extends LiveFeedbackResizableEditPol
 		}
 
 		@Override
-		protected ChangeBoundsRequest getSourceRequest() {
-			return (ChangeBoundsRequest) super.getSourceRequest();
+		protected Command getCommand() {
+			return getHost().getCommand(getSourceRequest());
 		}
 
 		@Override
-		protected Command getCommand() {
-			return getHost().getCommand(getSourceRequest());
+		protected String getCommandName() {
+			return "set preferred size";
+		}
+
+		@Override
+		protected ChangeBoundsRequest getSourceRequest() {
+			return (ChangeBoundsRequest) super.getSourceRequest();
 		}
 
 		@Override
@@ -62,21 +67,18 @@ public class PreferredSizeHandlerEditPolicy extends LiveFeedbackResizableEditPol
 			getHost().refresh();
 			return true;
 		}
-
-		@Override
-		protected String getCommandName() {
-			return "set preferred size";
-		}
 	}
 
 	public class PreferredSizeSquareHandle extends SquareHandle {
 
 		public PreferredSizeSquareHandle(GraphicalEditPart editpart) {
 			super(editpart, new RelativeLocator(getHostFigure(), 0.75, 1) {
+				@Override
 				protected Rectangle getReferenceBox() {
 					IFigure f = getReferenceFigure();
-					if (f instanceof HandleBounds)
+					if (f instanceof HandleBounds) {
 						return ((HandleBounds) f).getHandleBounds();
+					}
 					return super.getReferenceBox();
 				}
 			});
@@ -97,12 +99,6 @@ public class PreferredSizeHandlerEditPolicy extends LiveFeedbackResizableEditPol
 			// Paint inverse colors
 			return false;
 		}
-
-	}
-
-	@Override
-	public IGraphicalEditPart getHost() {
-		return (IGraphicalEditPart) super.getHost();
 	}
 
 	@Override
@@ -114,4 +110,8 @@ public class PreferredSizeHandlerEditPolicy extends LiveFeedbackResizableEditPol
 		return result;
 	}
 
+	@Override
+	public IGraphicalEditPart getHost() {
+		return (IGraphicalEditPart) super.getHost();
+	}
 }

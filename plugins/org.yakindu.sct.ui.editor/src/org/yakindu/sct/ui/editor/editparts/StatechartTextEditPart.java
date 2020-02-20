@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
  * 	committers of YAKINDU - initial API and implementation
- * 
+ *
  */
 package org.yakindu.sct.ui.editor.editparts;
 
@@ -29,9 +29,9 @@ import org.yakindu.sct.ui.editor.partitioning.DiagramPartitioningUtil;
 import org.yakindu.sct.ui.editor.policies.PreferredSizeHandlerEditPolicy;
 
 /**
- * 
+ *
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public class StatechartTextEditPart extends ShapeNodeEditPart implements IPrimaryEditPart {
 
@@ -40,22 +40,22 @@ public class StatechartTextEditPart extends ShapeNodeEditPart implements IPrimar
 	}
 
 	@Override
-	protected NodeFigure createNodeFigure() {
-		final NodeFigure figure = new NodeFigure();
-		figure.setLayoutManager(new StackLayout());
-		figure.add(new StatechartTextFigure(getMapMode()));
-		figure.setMinimumSize(new Dimension(0, 0));
-		return figure;
-	}
-
-	@Override
 	public void activate() {
 		super.activate();
 	}
 
 	@Override
-	public void deactivate() {
-		super.deactivate();
+	protected void addChildVisual(EditPart childEditPart, int index) {
+		if (childEditPart instanceof StatechartNameEditPart) {
+			((StatechartNameEditPart) childEditPart).setLabel(getPrimaryShape().getName());
+		} else if (childEditPart instanceof StatechartTextExpressionEditPart) {
+			IFigure pane = getPrimaryShape().getCompartment();
+			pane.setLayoutManager(new StackLayout());
+			IFigure compartmentFigure = ((StatechartTextExpressionEditPart) childEditPart).getFigure();
+			pane.add(compartmentFigure);
+		} else {
+			super.addChildVisual(childEditPart, index);
+		}
 	}
 
 	@Override
@@ -74,36 +74,30 @@ public class StatechartTextEditPart extends ShapeNodeEditPart implements IPrimar
 		// Disables deletion of the text compartment view via keyboard
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
 		removeEditPolicy(EditPolicyRoles.CONNECTION_HANDLES_ROLE);
-		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new PreferredSizeHandlerEditPolicy() {
-		});
+		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new PreferredSizeHandlerEditPolicy());
 	}
 
 	@Override
-	protected void addChildVisual(EditPart childEditPart, int index) {
-		if (childEditPart instanceof StatechartNameEditPart) {
-			((StatechartNameEditPart) childEditPart).setLabel(getPrimaryShape().getName());
-		} else if (childEditPart instanceof StatechartTextExpressionEditPart) {
-			IFigure pane = getPrimaryShape().getCompartment();
-			pane.setLayoutManager(new StackLayout());
-			IFigure compartmentFigure = ((StatechartTextExpressionEditPart) childEditPart).getFigure();
-			pane.add(compartmentFigure);
-		} else
-			super.addChildVisual(childEditPart, index);
+	protected NodeFigure createNodeFigure() {
+		final NodeFigure figure = new NodeFigure();
+		figure.setLayoutManager(new StackLayout());
+		figure.add(new StatechartTextFigure(getMapMode()));
+		figure.setMinimumSize(new Dimension(0, 0));
+		return figure;
 	}
 
 	@Override
-	protected void removeChildVisual(EditPart childEditPart) {
-		if (childEditPart instanceof StatechartTextExpressionEditPart) {
-			IFigure pane = getPrimaryShape().getCompartment();
-			IFigure compartmentFigure = ((StatechartTextExpressionEditPart) childEditPart).getFigure();
-			pane.remove(compartmentFigure);
-		} else
-			super.removeChildVisual(childEditPart);
+	public void deactivate() {
+		super.deactivate();
 	}
 
-	@Override
-	protected void refreshVisibility() {
-		setVisibility(isDefinitionSectionInlined());
+	private StatechartTextFigure getPrimaryShape() {
+		return (StatechartTextFigure) getFigure().getChildren().get(0);
+	}
+
+	protected boolean isDefinitionSectionInlined() {
+		BooleanValueStyle style = DiagramPartitioningUtil.getInlineDefinitionSectionStyle(getDiagramView());
+		return style != null ? style.isBooleanValue() : true;
 	}
 
 	@Override
@@ -112,12 +106,19 @@ public class StatechartTextEditPart extends ShapeNodeEditPart implements IPrimar
 		super.refresh();
 	}
 
-	protected boolean isDefinitionSectionInlined() {
-		BooleanValueStyle style = DiagramPartitioningUtil.getInlineDefinitionSectionStyle(getDiagramView());
-		return style != null ? style.isBooleanValue() : true;
+	@Override
+	protected void refreshVisibility() {
+		setVisibility(isDefinitionSectionInlined());
 	}
 
-	private StatechartTextFigure getPrimaryShape() {
-		return (StatechartTextFigure) getFigure().getChildren().get(0);
+	@Override
+	protected void removeChildVisual(EditPart childEditPart) {
+		if (childEditPart instanceof StatechartTextExpressionEditPart) {
+			IFigure pane = getPrimaryShape().getCompartment();
+			IFigure compartmentFigure = ((StatechartTextExpressionEditPart) childEditPart).getFigure();
+			pane.remove(compartmentFigure);
+		} else {
+			super.removeChildVisual(childEditPart);
+		}
 	}
 }
