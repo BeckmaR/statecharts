@@ -108,6 +108,21 @@ public class LiveFeedbackResizableEditPolicy extends ResizableEditPolicyEx {
 		return liveFeedbackResizeTracker;
 	}
 
+	protected void enforceConstraintForMove(ChangeBoundsRequest request) {
+		Rectangle relativeBounds = getOriginalBounds();
+		PrecisionRectangle manipulatedConstraint = new PrecisionRectangle(
+				 request.getTransformedRectangle(relativeBounds));
+		getHostFigure().translateToRelative(manipulatedConstraint);
+		
+		manipulatedConstraint.setX(Math.max(0, manipulatedConstraint.x));
+		manipulatedConstraint.setY(Math.max(0, manipulatedConstraint.y));
+		
+		getHostFigure().translateToAbsolute(manipulatedConstraint);
+		
+		Dimension difference = manipulatedConstraint.getLocation().getDifference(originalBounds.getLocation());
+		request.setMoveDelta(new Point(difference.width, difference.height));
+	}
+
 	@Override
 	protected void showChangeBoundsFeedback(ChangeBoundsRequest request) {
 		System.out.println("LIVE FEEDBACK " + request.getMoveDelta());
