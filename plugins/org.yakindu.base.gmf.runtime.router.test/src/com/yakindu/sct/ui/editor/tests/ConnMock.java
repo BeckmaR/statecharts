@@ -3,12 +3,10 @@ package com.yakindu.sct.ui.editor.tests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.AnchorListener;
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.ConnectionRouter;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RelativeBendpoint;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
@@ -18,48 +16,57 @@ import org.yakindu.base.gmf.runtime.router.RelativeBendpointUtil;
 
 public class ConnMock extends FigureMock implements Connection {
 
-	public static class AnchorMock implements ConnectionAnchor {
-
-		private Rectangle bounds;
-
-		public AnchorMock(Rectangle bounds) {
-			this.bounds = bounds;
-		}
-
-		@Override
-		public void addAnchorListener(AnchorListener listener) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Point getLocation(Point reference) {
-			return getReferencePoint();
-		}
-
-		@Override
-		public IFigure getOwner() {
-			return new FigureMock(bounds);
-		}
-
-		@Override
-		public Point getReferencePoint() {
-			return bounds.getCenter();
-		}
-
-		@Override
-		public void removeAnchorListener(AnchorListener listener) {
-			throw new UnsupportedOperationException();
-		}
+	/**
+	 * Map from RoutingInput to connection.setPoints(points) determines how to
+	 * route.
+	 * <p>
+	 * Unregistered RoutingInput is rejected.
+	 * <p>
+	 * Routing data needs to be assembled from running SCT application.
+	 */
+	public static class SimulatedRouter {
 	}
+
+//	public static class AnchorMock implements ConnectionAnchor {
+//
+//		private Rectangle bounds;
+//
+//		public AnchorMock(Rectangle bounds) {
+//			this.bounds = bounds;
+//		}
+//
+//		@Override
+//		public void addAnchorListener(AnchorListener listener) {
+//			throw new UnsupportedOperationException();
+//		}
+//
+//		@Override
+//		public Point getLocation(Point reference) {
+//			return getReferencePoint();
+//		}
+//
+//		@Override
+//		public IFigure getOwner() {
+//			return new FigureMock("", bounds);
+//		}
+//
+//		@Override
+//		public Point getReferencePoint() {
+//			return bounds.getCenter();
+//		}
+//
+//		@Override
+//		public void removeAnchorListener(AnchorListener listener) {
+//			throw new UnsupportedOperationException();
+//		}
+//	}
 
 	private Rectangle sourceBox;
 	private Rectangle targetBox;
 	private List<Point> points;
-	private String name;
 
 	public ConnMock(String name, Rectangle sourceBox, Rectangle targetBox, List<Point> points) {
-		super(null);
-		this.name = name;
+		super(name, null);
 		this.sourceBox = sourceBox;
 		this.targetBox = targetBox;
 		this.points = new ArrayList<>(points);
@@ -94,14 +101,12 @@ public class ConnMock extends FigureMock implements Connection {
 
 	@Override
 	public ConnectionAnchor getSourceAnchor() {
-		return new ChopboxAnchor(new FigureMock(sourceBox));
-//		return new AnchorMock(sourceBox);
+		return new ChopboxAnchor(new FigureMock(name + ":source", sourceBox));
 	}
 
 	@Override
 	public ConnectionAnchor getTargetAnchor() {
-		return new ChopboxAnchor(new FigureMock(targetBox));
-//		return new AnchorMock(targetBox);
+		return new ChopboxAnchor(new FigureMock(name + ":target", targetBox));
 	}
 
 	@Override

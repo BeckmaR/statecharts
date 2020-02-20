@@ -34,9 +34,11 @@ import org.eclipse.swt.graphics.Font;
 
 public class FigureMock implements IFigure {
 
+	protected String name;
 	private Rectangle bounds;
 
-	public FigureMock(Rectangle bounds) {
+	public FigureMock(String name, Rectangle bounds) {
+		this.name = name;
 		this.bounds = bounds;
 	}
 
