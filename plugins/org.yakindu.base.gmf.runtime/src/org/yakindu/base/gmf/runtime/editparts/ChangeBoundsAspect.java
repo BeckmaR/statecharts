@@ -1,5 +1,7 @@
 package org.yakindu.base.gmf.runtime.editparts;
 
+import java.util.function.Supplier;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -16,16 +18,22 @@ import org.yakindu.base.gmf.runtime.editpolicies.SetPreferredSizeRequest;
 
 public class ChangeBoundsAspect {
 
-	public class LiveFeedbackResizeTracker extends org.yakindu.base.gmf.runtime.tracker.ResizeTracker {
+	public static class LiveFeedbackResizeTracker extends org.yakindu.base.gmf.runtime.tracker.ResizeTracker {
 
-		public LiveFeedbackResizeTracker(GraphicalEditPart owner, int direction) {
+		Supplier<Rectangle> originalBoundsProvider;
+		Supplier<IFigure> hostFigureProvider;
+
+		public LiveFeedbackResizeTracker(GraphicalEditPart owner, int direction, Supplier<Rectangle> originalBounds,
+				Supplier<IFigure> hostFigure) {
 			super(owner, direction);
+			originalBoundsProvider = originalBounds;
+			hostFigureProvider = hostFigure;
 		}
 
 		@Override
 		protected void enforceConstraintsForResize(ChangeBoundsRequest request) {
 			super.enforceConstraintsForResize(request);
-			final IFigure figure = getHostFigure();
+			final IFigure figure = hostFigureProvider.get();
 			Dimension prefSize = figure.getPreferredSize().getCopy();
 			figure.translateToAbsolute(prefSize);
 			Rectangle bounds = getOriginalBounds();
@@ -41,7 +49,7 @@ public class ChangeBoundsAspect {
 
 		@Override
 		protected Rectangle getOriginalBounds() {
-			return ChangeBoundsAspect.this.getOriginalBounds();
+			return originalBoundsProvider.get();
 		}
 	}
 
@@ -81,7 +89,7 @@ public class ChangeBoundsAspect {
 		return host;
 	}
 
-	protected IFigure getHostFigure() {
+	public IFigure getHostFigure() {
 		return host.getFigure();
 	}
 
@@ -93,7 +101,7 @@ public class ChangeBoundsAspect {
 		return host.getParent().getCommand(NULL_REQUEST);
 	}
 
-	protected Rectangle getOriginalBounds() {
+	public Rectangle getOriginalBounds() {
 		if (originalBounds == null) {
 			updateOriginalBounds();
 		}
@@ -125,7 +133,9 @@ public class ChangeBoundsAspect {
 	}
 
 	public ResizeTracker getResizeTracker(int direction) {
-		LiveFeedbackResizeTracker liveFeedbackResizeTracker = new LiveFeedbackResizeTracker(host, direction);
+		LiveFeedbackResizeTracker liveFeedbackResizeTracker = new LiveFeedbackResizeTracker(host, direction,
+				this::getOriginalBounds, this::getHostFigure);
+		// TODO: why set bounds when they are queried via getOriginalBounds() anyway?
 		liveFeedbackResizeTracker.setOriginalBounds(getOriginalBounds());
 		return liveFeedbackResizeTracker;
 	}
